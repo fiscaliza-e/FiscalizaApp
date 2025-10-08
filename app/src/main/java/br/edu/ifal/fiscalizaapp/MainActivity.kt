@@ -33,7 +33,7 @@ import br.edu.ifal.fiscalizaapp.navigation.homeRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 import br.edu.ifal.fiscalizaapp.ui.theme.DarkGray
 import br.edu.ifal.fiscalizaapp.ui.theme.LightGray
-import br.edu.ifal.fiscalizaapp.ui.theme.Pink
+import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 
 class MainActivity : ComponentActivity() {
 
@@ -137,8 +137,8 @@ class MainActivity : ComponentActivity() {
                     },
                     label = { Text(item.label) },
                     colors = NavigationBarItemColors(
-                        selectedIconColor = Pink,
-                        selectedTextColor = Pink,
+                        selectedIconColor = PrimaryGreen,
+                        selectedTextColor = PrimaryGreen,
                         selectedIndicatorColor = Color.Transparent,
                         unselectedIconColor = DarkGray,
                         unselectedTextColor = DarkGray,
