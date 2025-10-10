@@ -14,21 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Fiscaliza">
         <activity
-            android:name=".composables.card.CategoryCard"
-            android:exported="false"
-            android:label="@string/title_activity_category_card"
-            android:theme="@style/Theme.Fiscaliza" />
-        <activity
-            android:name=".composables.card.CardComposable"
-            android:exported="false"
-            android:label="@string/title_activity_card_composable"
-            android:theme="@style/Theme.Fiscaliza" />
-        <activity
-            android:name=".composables.card.CardBaseComposable"
-            android:exported="false"
-            android:label="@string/title_activity_card_base_composable"
-            android:theme="@style/Theme.Fiscaliza" />
-        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"

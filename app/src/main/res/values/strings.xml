@@ -3,7 +3,5 @@
     <string name="fiscalizaapp">FiscalizaApp</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_detail">DetailActivity</string>
-    <string name="title_activity_card_base_composable">CardBaseComposable</string>
     <string name="title_activity_card_composable">CardComposable</string>
-    <string name="title_activity_category_card">CategoryCard</string>
 </resources>
