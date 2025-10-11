@@ -2,9 +2,11 @@ package br.edu.ifal.fiscalizaapp.composables.button
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,13 +14,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
+
 sealed class ButtonVariant {
     data object Primary : ButtonVariant()
     data object Secondary : ButtonVariant()
-
     data object Danger : ButtonVariant()
-
     data object Disabled : ButtonVariant()
+    data class Link(val color : Color = PrimaryGreen) : ButtonVariant()
 }
 
 @Composable
@@ -27,7 +31,9 @@ fun Button(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     variant: ButtonVariant = ButtonVariant.Primary,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    leftIcon: ImageVector? = null,
+    rightIcon: ImageVector? = null,
 ) {
     val primaryColor = PrimaryGreen
     val buttonShape = RoundedCornerShape(8.dp)
@@ -49,10 +55,14 @@ fun Button(
             containerColor = Color.Gray,
             contentColor = Color.White
         )
+        is ButtonVariant.Link -> ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = variant.color
+        )
     }
 
     val border = when (variant) {
-        ButtonVariant.Primary -> null
+        ButtonVariant.Primary, ButtonVariant.Disabled, is ButtonVariant.Link -> null
         ButtonVariant.Secondary -> BorderStroke(
             width = 1.dp,
             color = primaryColor
@@ -61,7 +71,6 @@ fun Button(
             width = 1.dp,
             color = Color.Red
         )
-        ButtonVariant.Disabled -> null
     }
 
     Button(
@@ -71,8 +80,26 @@ fun Button(
         colors = colors,
         border = border,
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
-        shape = buttonShape
+        shape = buttonShape,
     ) {
+        if (leftIcon != null) {
+            Icon(
+                imageVector = leftIcon,
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize)
+            )
+            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+        }
+
         Text(text = text.uppercase())
+
+        if (rightIcon != null) {
+            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+            Icon(
+                imageVector = rightIcon,
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize)
+            )
+        }
     }
 }

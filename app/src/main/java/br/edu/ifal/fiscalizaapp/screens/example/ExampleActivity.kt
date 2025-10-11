@@ -6,9 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import br.edu.ifal.fiscalizaapp.ui.theme.SecondaryGreen
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.edu.ifal.fiscalizaapp.composables.button.Button
@@ -54,6 +59,43 @@ fun ExampleScreen(modifier: Modifier = Modifier) {
                     onClick = { /* TODO: Implementar navegação */ },
                     variant = ButtonVariant.Disabled,
                     modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    text = "Esqueci minha senha",
+                    onClick = { /* TODO: Implementar navegação */ },
+                    variant = ButtonVariant.Link(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    text = "Ver todas as categorias",
+                    onClick = { /* TODO: Implementar navegação */ },
+                    variant = ButtonVariant.Link(),
+                    rightIcon = Icons.Default.ChevronRight,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    text = "Excluir minha conta",
+                    onClick = { /* TODO: Implementar navegação */ },
+                    variant = ButtonVariant.Link(color = Color.Red),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    text = "Registrar sem conta",
+                    onClick = { /* TODO: Implementar navegação */ },
+                    variant = ButtonVariant.Link(color = SecondaryGreen),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    text = "Usar minha localização atual",
+                    onClick = { /* TODO: Implementar navegação */ },
+                    variant = ButtonVariant.Link(),
+                    modifier = Modifier.fillMaxWidth(),
+                    leftIcon = Icons.Default.LocationOn
                 )
             }
         }
