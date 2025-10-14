@@ -8,14 +8,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
+import br.edu.ifal.fiscalizaapp.composables.textarea.TextArea
 import br.edu.ifal.fiscalizaapp.screens.example.composables.exampleComposable.ExampleCard
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
-
 
 @Composable
 fun ExampleScreen(modifier: Modifier = Modifier) {
@@ -55,11 +59,19 @@ fun ExampleScreen(modifier: Modifier = Modifier) {
                     variant = ButtonVariant.Disabled,
                     modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(32.dp))
+
+                var description by remember { mutableStateOf("") }
+                TextArea(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = "Descrição",
+                    maxLength = 500
+                )
             }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
