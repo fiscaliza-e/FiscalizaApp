@@ -7,20 +7,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import br.edu.ifal.fiscalizaapp.ui.theme.SecondaryGreen
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
+import br.edu.ifal.fiscalizaapp.composables.textarea.TextArea
 import br.edu.ifal.fiscalizaapp.screens.example.composables.exampleComposable.ExampleCard
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
-
+import br.edu.ifal.fiscalizaapp.ui.theme.SecondaryGreen
 
 @Composable
 fun ExampleScreen(modifier: Modifier = Modifier) {
@@ -33,12 +37,14 @@ fun ExampleScreen(modifier: Modifier = Modifier) {
                     .fillMaxSize()
             ) {
                 Spacer(modifier = Modifier.height(32.dp))
+
                 Button(
                     text = "Cadastrar Reclamação",
                     onClick = { /* TODO: Implementar navegação */ },
                     variant = ButtonVariant.Primary,
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     text = "Ver Reclamações",
@@ -46,6 +52,7 @@ fun ExampleScreen(modifier: Modifier = Modifier) {
                     variant = ButtonVariant.Secondary,
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     text = "Excluir Reclamações",
@@ -53,6 +60,7 @@ fun ExampleScreen(modifier: Modifier = Modifier) {
                     variant = ButtonVariant.Danger,
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     text = "Cadastrar Reclamação",
@@ -60,6 +68,7 @@ fun ExampleScreen(modifier: Modifier = Modifier) {
                     variant = ButtonVariant.Disabled,
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     text = "Esqueci minha senha",
@@ -67,6 +76,7 @@ fun ExampleScreen(modifier: Modifier = Modifier) {
                     variant = ButtonVariant.Link(),
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     text = "Ver todas as categorias",
@@ -75,33 +85,19 @@ fun ExampleScreen(modifier: Modifier = Modifier) {
                     rightIcon = Icons.Default.ChevronRight,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    text = "Excluir minha conta",
-                    onClick = { /* TODO: Implementar navegação */ },
-                    variant = ButtonVariant.Link(color = Color.Red),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    text = "Registrar sem conta",
-                    onClick = { /* TODO: Implementar navegação */ },
-                    variant = ButtonVariant.Link(color = SecondaryGreen),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    text = "Usar minha localização atual",
-                    onClick = { /* TODO: Implementar navegação */ },
-                    variant = ButtonVariant.Link(),
-                    modifier = Modifier.fillMaxWidth(),
-                    leftIcon = Icons.Default.LocationOn
+
+                Spacer(modifier = Modifier.height(32.dp))
+                var description by remember { mutableStateOf("") }
+                TextArea(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = "Descrição",
+                    maxLength = 500
                 )
             }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
