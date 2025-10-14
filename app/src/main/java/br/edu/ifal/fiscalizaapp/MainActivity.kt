@@ -34,6 +34,7 @@ import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 import br.edu.ifal.fiscalizaapp.ui.theme.DarkGray
 import br.edu.ifal.fiscalizaapp.ui.theme.LightGray
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
+import br.edu.ifal.fiscalizaapp.navigation.imagePickerPlaygroundRoute
 
 class MainActivity : ComponentActivity() {
 
@@ -57,7 +58,12 @@ class MainActivity : ComponentActivity() {
             label = "FAQ",
             icon = Icons.Outlined.Info,
             route = exampleRoute
-        )
+        ) ,
+        BottomNavBarItem(
+                label = "Picker",
+        icon = Icons.Outlined.Info,
+        route = imagePickerPlaygroundRoute
+    )
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

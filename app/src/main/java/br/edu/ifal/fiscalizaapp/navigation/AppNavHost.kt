@@ -9,6 +9,7 @@ fun AppNavHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = homeRoute) {
         homeScreen(navController)
         exampleScreen(navController)
+        imagePickerPlaygroundScreen(navController)
     }
 }
 
