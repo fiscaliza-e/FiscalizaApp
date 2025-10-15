@@ -69,7 +69,7 @@ private fun InputVariant.getColors(enabled: Boolean): InputColors {
     }
 
     return when (this) {
-        InputVariant.Primary -> InputColors(Color.Gray, Color.Black, Color.White, Color.Gray) // Borda padrão cinza para Primary
+        InputVariant.Primary -> InputColors(Color.Gray, Color.Black, Color.White, Color.Gray)
         InputVariant.Secondary -> InputColors(Color.Gray, Color.Black, Color.White, Color.Gray)
         InputVariant.Danger -> InputColors(Color.Red, Color.Red, Color.White, Color.Gray)
         is InputVariant.Link -> InputColors(color, color, Color.Transparent, Color.Gray)
