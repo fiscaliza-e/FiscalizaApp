@@ -107,7 +107,7 @@ fun ImagePicker(
                 imageVector = Icons.Outlined.CameraAlt,
                 contentDescription = strings.contentDescription,
                 tint = Color(0xFFBDBDBD),
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(80.dp)
             )
             Spacer(Modifier.height(8.dp))
             Text(
@@ -120,12 +120,12 @@ fun ImagePicker(
     if (selectedImages.isNotEmpty()) {
         Spacer(Modifier.height(12.dp))
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 72.dp),
+            columns = GridCells.Adaptive(minSize = 120.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 72.dp, max = 220.dp)
+                .heightIn(min = 120.dp, max = 360.dp)
         ) {
             items(selectedImages, key = { it.toString() }) { uri ->
                 ThumbnailCard(
@@ -144,7 +144,7 @@ private fun ThumbnailCard(
 ) {
     Card(
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.size(72.dp)
+        modifier = Modifier.size(120.dp)
     ) {
         Box {
             AsyncImage(
