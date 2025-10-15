@@ -87,7 +87,7 @@ fun ImagePicker(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(200.dp)
             .background(Color(0xFFF9F9F9), shape)
             .dashedBorder(
                 color = dashedColor,
