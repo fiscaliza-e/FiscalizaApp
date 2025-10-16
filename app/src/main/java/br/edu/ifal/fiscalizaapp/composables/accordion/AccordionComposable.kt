@@ -20,6 +20,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,8 +31,39 @@ import androidx.compose.ui.unit.dp
 import br.edu.ifal.fiscalizaapp.composables.card.CardBase
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 
+data class AccordionItem(
+    val question: String,
+    val answer: String
+)
+
 @Composable
-fun Accordion(
+fun AccordionList(
+    items: List<AccordionItem>,
+    modifier: Modifier = Modifier,
+    itemSpacing: Int = 8
+) {
+    val expanded = remember {
+        mutableStateListOf<Boolean>().apply { repeat(items.size) { add(false) } }
+    }
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(itemSpacing.dp)
+    ) {
+        items.forEachIndexed { index, item ->
+            Accordion(
+                question = item.question,
+                answer = item.answer,
+                expanded = expanded[index],
+                onToggle = { expanded[index] = !expanded[index] },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun Accordion(
     question: String,
     answer: String,
     expanded: Boolean,
@@ -86,30 +119,6 @@ fun Accordion(
                     )
                 }
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AccordionPreview() {
-    FiscalizaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Accordion(
-                question = "Há algum custo para utilizar o aplicativo?",
-                answer = "Não, o aplicativo é totalmente gratuito para todos os usuários.",
-                expanded = false,
-                onToggle = { }
-            )
-            Accordion(
-                question = "É possível enviar uma solicitação em nome de outra pessoa?",
-                answer = "Para garantir a precisão e segurança, solicitamos que as reclamações sejam feitas em nome do próprio usuário cadastrado. Dessa forma, conseguimos manter a transparência e o histórico de cada solicitação.",
-                expanded = true,
-                onToggle = { }
-            )
         }
     }
 }
