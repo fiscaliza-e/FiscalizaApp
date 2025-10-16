@@ -28,7 +28,6 @@ fun CardBase(
     val shape = RoundedCornerShape(12.dp)
 
     if (onClick != null) {
-        // Card clicável somente quando onClick não é nulo
         Card(
             modifier = modifier,
             onClick = onClick,
@@ -44,7 +43,6 @@ fun CardBase(
             }
         }
     } else {
-        // Versão não clicável (sem semântica de clique)
         Card(
             modifier = modifier,
             colors = colors,
