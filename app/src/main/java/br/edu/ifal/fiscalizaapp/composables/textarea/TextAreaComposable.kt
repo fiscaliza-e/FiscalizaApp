@@ -1,5 +1,7 @@
 package br.edu.ifal.fiscalizaapp.composables.textarea
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 private val HorizontalPadding = 16.dp
 private val VerticalPadding = 16.dp
 private val BorderGray = Color(0xFFCCCCCC)
+private val WhiteBackground = Color.White
+private val FieldShape = RoundedCornerShape(8.dp)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +49,11 @@ fun TextArea(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(WhiteBackground, shape = FieldShape)
+        ) {
             BasicTextField(
                 value = value,
                 onValueChange = { newText ->
@@ -63,7 +72,7 @@ fun TextArea(
                         enabled = true,
                         singleLine = false,
                         visualTransformation = VisualTransformation.None,
-                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                        interactionSource = remember { MutableInteractionSource() },
                         placeholder = {
                             if (value.isEmpty()) {
                                 Text(
@@ -77,14 +86,24 @@ fun TextArea(
                             focusedBorderColor = BorderGray,
                             disabledBorderColor = BorderGray,
                             errorBorderColor = BorderGray,
-                            cursorColor = MaterialTheme.colorScheme.onSurface
+                            cursorColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedContainerColor = WhiteBackground,
+                            focusedContainerColor = WhiteBackground
                         ),
                         contentPadding = OutlinedTextFieldDefaults.contentPadding(
                             start = HorizontalPadding,
                             end = HorizontalPadding,
                             top = VerticalPadding,
                             bottom = VerticalPadding
-                        )
+                        ),
+                        container = {
+                            OutlinedTextFieldDefaults.Container(
+                                enabled = true,
+                                isError = isError,
+                                interactionSource = remember { MutableInteractionSource() },
+                                shape = FieldShape
+                            )
+                        }
                     )
                 }
             )
