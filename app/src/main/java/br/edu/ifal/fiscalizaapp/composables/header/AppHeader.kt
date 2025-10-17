@@ -2,6 +2,9 @@ package br.edu.ifal.fiscalizaapp.composables.header
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -27,8 +30,8 @@ import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 
 enum class AppHeaderType {
-    TELA_PRINCIPAL,
-    TELA_INTERNA
+    MAIN_SCREEN,
+    INTERN_SCREEN
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,61 +45,70 @@ fun AppHeader(
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = Color.White
         ),
         modifier = modifier,
         title = {
             when (type) {
-                AppHeaderType.TELA_PRINCIPAL -> {
+                AppHeaderType.MAIN_SCREEN -> {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_logo_app),
                             contentDescription = "Logo do App",
                             tint = Color.Unspecified,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(32.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(24.dp))
                         Text(
                             text = "Fiscaliza-e",
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
-                AppHeaderType.TELA_INTERNA -> {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Medium
-                    )
+                AppHeaderType.INTERN_SCREEN -> {
+                    Row (verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        IconButton(onClick = onBackClick,
+                            modifier = Modifier.offset(x = (-12).dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                modifier = Modifier.size(24.dp),
+                                contentDescription = "Voltar",
+                                tint = PrimaryGreen
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
         },
         navigationIcon = {
             when (type) {
-                AppHeaderType.TELA_INTERNA -> {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Voltar",
-                            tint = PrimaryGreen
-                        )
-                    }
-                }
-                AppHeaderType.TELA_PRINCIPAL -> { }
+                AppHeaderType.INTERN_SCREEN -> { }
+                AppHeaderType.MAIN_SCREEN -> { }
             }
         },
         actions = {
             when (type) {
-                AppHeaderType.TELA_PRINCIPAL -> {
+                AppHeaderType.MAIN_SCREEN -> {
                     IconButton(onClick = onActionClick) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                            painter = painterResource(id = R.drawable.ic_exit_button),
+                            modifier = Modifier.size(21.dp),
                             contentDescription = "Sair",
                             tint = PrimaryGreen
                         )
                     }
                 }
-                AppHeaderType.TELA_INTERNA -> { }
+                AppHeaderType.INTERN_SCREEN -> { }
             }
         }
     )
@@ -107,7 +119,7 @@ fun AppHeader(
 fun AppHeaderPreview_MainScreen() {
     FiscalizaTheme {
         AppHeader(
-            type = AppHeaderType.TELA_PRINCIPAL,
+            type = AppHeaderType.MAIN_SCREEN,
             onActionClick = {}
         )
     }
@@ -118,7 +130,7 @@ fun AppHeaderPreview_MainScreen() {
 fun AppHeaderPreview_InternalScreen() {
     FiscalizaTheme {
         AppHeader(
-            type = AppHeaderType.TELA_INTERNA,
+            type = AppHeaderType.INTERN_SCREEN,
             title = "Detalhes do Protocolo",
             onBackClick = {}
         )
