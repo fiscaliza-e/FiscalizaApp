@@ -1,5 +1,6 @@
 package br.edu.ifal.fiscalizaapp.composables.card
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -27,22 +28,14 @@ fun CardBase(
     val shape = RoundedCornerShape(12.dp)
     val interactionSource = remember { MutableInteractionSource() }
 
-    val clickModifier = if (onClick != null) {
-        if (showRipple) {
-            modifier.clickable(
-                enabled = true,
-                interactionSource = interactionSource,
-                onClick = onClick
-            )
-        } else {
-            modifier.clickable(
-                enabled = true,
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick
-            )
-        }
-    } else modifier
+    val clickModifier = onClick?.let { click ->
+        modifier.clickable(
+            enabled = true,
+            interactionSource = interactionSource,
+            indication = if (showRipple) LocalIndication.current else null,
+            onClick = click
+        )
+    } ?: modifier
 
     Card(
         modifier = clickModifier,
