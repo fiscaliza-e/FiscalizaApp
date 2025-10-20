@@ -11,4 +11,3 @@ fun AppNavHost(navController: NavHostController) {
         exampleScreen(navController)
     }
 }
-
