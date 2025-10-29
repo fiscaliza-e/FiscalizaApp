@@ -87,8 +87,8 @@ val mockProtocols = listOf(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProtocolList(modifier: Modifier = Modifier) {
-    val protocols = emptyList<ProtocolMock>()
-    // val protocols = mockProtocols
+    //val protocols = emptyList<ProtocolMock>()
+    val protocols = mockProtocols
 
     if (protocols.isEmpty()) {
         Box(

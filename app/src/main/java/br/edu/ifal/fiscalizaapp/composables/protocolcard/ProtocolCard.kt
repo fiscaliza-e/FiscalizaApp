@@ -40,7 +40,6 @@ fun mapStatusToVariant(statusText: String): StatusTagVariant {
         else -> StatusTagVariant.Pending
     }
 }
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProtocolCard(
     title: String,
