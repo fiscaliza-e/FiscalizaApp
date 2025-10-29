@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -62,15 +63,17 @@ fun ProtocolCard(
         Column(
             modifier = Modifier
                 .padding(20.dp, 16.dp)
-                .fillMaxWidth()
-                .height(style.heightDp.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .fillMaxWidth().defaultMinSize(minHeight = style.heightDp.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(title, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp), maxLines = 1 )
 
                 Text(formattedDate, color = Color.DarkGray)
             }
