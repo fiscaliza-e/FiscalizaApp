@@ -19,6 +19,7 @@ import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,10 +28,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
+import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
+import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.model.BottomNavBarItem
 import br.edu.ifal.fiscalizaapp.navigation.AppNavHost
 import br.edu.ifal.fiscalizaapp.navigation.exampleRoute
 import br.edu.ifal.fiscalizaapp.navigation.homeRoute
+import br.edu.ifal.fiscalizaapp.navigation.loginRoute
+import br.edu.ifal.fiscalizaapp.navigation.protocolRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 import br.edu.ifal.fiscalizaapp.ui.theme.DarkGray
 import br.edu.ifal.fiscalizaapp.ui.theme.LightGray
@@ -46,8 +51,8 @@ class MainActivity : ComponentActivity() {
         ),
         BottomNavBarItem(
             label = "Protocolos",
-            icon = Icons.Default.Description,
-            route = exampleRoute
+            icon = Icons.Outlined.Call,
+            route = protocolRoute
         ),
         BottomNavBarItem(
             label = "Perfil",
@@ -100,6 +105,8 @@ class MainActivity : ComponentActivity() {
     ) {
         Scaffold(
             containerColor = Color.White,
+            topBar = {
+                AppHeader(AppHeaderType.MAIN_SCREEN) },
             bottomBar = {
                 BottomNavBar(
                     modifier = Modifier,
