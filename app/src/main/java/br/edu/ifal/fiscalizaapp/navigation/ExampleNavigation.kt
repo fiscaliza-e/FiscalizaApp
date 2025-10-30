@@ -9,7 +9,7 @@ const val exampleRoute = "exampleScreen"
 
 fun NavGraphBuilder.exampleScreen(navController: NavController) {
     composable(exampleRoute) {
-        ExampleScreen()
+        ExampleScreen(navController = navController)
     }
 }
 

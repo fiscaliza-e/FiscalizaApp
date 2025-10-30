@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.accordion.AccordionItem
 import br.edu.ifal.fiscalizaapp.composables.accordion.AccordionList
 import br.edu.ifal.fiscalizaapp.composables.button.Button
@@ -37,7 +38,7 @@ import br.edu.ifal.fiscalizaapp.screens.example.composables.exampleComposable.Ex
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 
 @Composable
-fun ExampleScreen(modifier: Modifier = Modifier) {
+fun ExampleScreen(navController: NavController, modifier: Modifier = Modifier) {
     var uris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var description by remember { mutableStateOf("") }
 
@@ -151,7 +152,9 @@ fun ExampleScreen(modifier: Modifier = Modifier) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             text = "Ver todas as categorias",
-                            onClick = { /* TODO: Implementar navegação */ },
+                            onClick = {
+                                navController.navigate("categories")
+                            },
                             variant = ButtonVariant.Link(),
                             rightIcon = Icons.Default.ChevronRight,
                             modifier = Modifier.fillMaxWidth()
