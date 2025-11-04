@@ -19,6 +19,4 @@ interface ModelService {
     @GET("faq")
     suspend fun getFaq(): List<FaqItem>
 
-    companion object
-
 }
