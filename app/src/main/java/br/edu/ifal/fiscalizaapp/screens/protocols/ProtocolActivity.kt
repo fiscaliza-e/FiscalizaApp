@@ -46,7 +46,7 @@ fun ProtocolScreen(
                 }
                 is UiState.Success -> {
                     ProtocolList(
-                        protocols = state.protocols,
+                        protocols = state.data,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
