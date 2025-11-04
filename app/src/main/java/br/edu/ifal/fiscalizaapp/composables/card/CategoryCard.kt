@@ -1,6 +1,7 @@
 package br.edu.ifal.fiscalizaapp.composables.card
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +30,8 @@ fun CategoryCard(
 ) {
     CardBase (
         onClick = onClick,
-        modifier = modifier
+        modifier = modifier,
+        contentPadding = PaddingValues(0.dp)
     ) {
         Column(
             modifier = Modifier

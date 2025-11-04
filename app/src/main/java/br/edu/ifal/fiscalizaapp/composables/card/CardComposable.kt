@@ -4,6 +4,9 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
@@ -23,6 +26,7 @@ fun CardBase(
     showRipple: Boolean = true,
     colors: CardColors = CardDefaults.cardColors(containerColor = Color.White),
     elevation: CardElevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    contentPadding: PaddingValues = PaddingValues(16.dp),
     content: @Composable () -> Unit
 ) {
     val shape = RoundedCornerShape(12.dp)
@@ -43,7 +47,7 @@ fun CardBase(
         elevation = elevation,
         shape = shape
     ) {
-        Box(contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.padding(contentPadding)) {
             content()
         }
     }
