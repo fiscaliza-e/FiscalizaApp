@@ -1,5 +1,6 @@
 package br.edu.ifal.fiscalizaapp.data.remote
 
+import br.edu.ifal.fiscalizaapp.data.model.FaqItem
 import br.edu.ifal.fiscalizaapp.data.model.Protocol
 import br.edu.ifal.fiscalizaapp.data.model.User
 import retrofit2.http.GET
@@ -14,4 +15,10 @@ interface ModelService {
 
     @GET("user")
     suspend fun getUsers(): List<User>
+
+    @GET("faq")
+    suspend fun getFaq(): List<FaqItem>
+
+    companion object
+
 }

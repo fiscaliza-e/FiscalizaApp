@@ -36,6 +36,7 @@ import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.model.BottomNavBarItem
 import br.edu.ifal.fiscalizaapp.navigation.AppNavHost
 import br.edu.ifal.fiscalizaapp.navigation.exampleRoute
+import br.edu.ifal.fiscalizaapp.navigation.faqRoute
 import br.edu.ifal.fiscalizaapp.navigation.homeRoute
 import br.edu.ifal.fiscalizaapp.navigation.loginRoute
 import br.edu.ifal.fiscalizaapp.navigation.protocolRoute
@@ -66,7 +67,7 @@ class MainActivity : ComponentActivity() {
         BottomNavBarItem(
             label = "FAQ",
             icon = Icons.Outlined.Info,
-            route = exampleRoute
+            route = faqRoute
         )
     )
 
