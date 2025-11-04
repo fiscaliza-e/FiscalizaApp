@@ -37,8 +37,8 @@ import br.edu.ifal.fiscalizaapp.model.BottomNavBarItem
 import br.edu.ifal.fiscalizaapp.navigation.AppNavHost
 import br.edu.ifal.fiscalizaapp.navigation.exampleRoute
 import br.edu.ifal.fiscalizaapp.navigation.homeRoute
-import br.edu.ifal.fiscalizaapp.navigation.loginRoute
 import br.edu.ifal.fiscalizaapp.navigation.protocolRoute
+import br.edu.ifal.fiscalizaapp.navigation.profileRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 import br.edu.ifal.fiscalizaapp.ui.theme.DarkGray
 import br.edu.ifal.fiscalizaapp.ui.theme.LightGray
@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
         BottomNavBarItem(
             label = "Perfil",
             icon = Icons.Default.Person,
-            route = exampleRoute
+            route = profileRoute
         ),
         BottomNavBarItem(
             label = "FAQ",

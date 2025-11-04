@@ -22,6 +22,7 @@ import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.setValue
+import br.edu.ifal.fiscalizaapp.db.DatabaseHelper
 import br.edu.ifal.fiscalizaapp.db.categoryList
 import br.edu.ifal.fiscalizaapp.model.CategoryEntity
 import kotlinx.coroutines.Dispatchers

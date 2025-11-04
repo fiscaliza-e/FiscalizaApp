@@ -19,7 +19,7 @@ fun AppNavHost(navController: NavHostController) {
         protocolScreen(navController)
         exampleScreen(navController)
         loginScreen(navController)
-
+        profileScreen(navController)
 
         composable(route = categoryListRoute) {
             CategoryListScreen(navController = navController)
