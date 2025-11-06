@@ -2,7 +2,6 @@ package br.edu.ifal.fiscalizaapp
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -37,7 +36,7 @@ import br.edu.ifal.fiscalizaapp.model.BottomNavBarItem
 import br.edu.ifal.fiscalizaapp.navigation.AppNavHost
 import br.edu.ifal.fiscalizaapp.navigation.exampleRoute
 import br.edu.ifal.fiscalizaapp.navigation.homeRoute
-import br.edu.ifal.fiscalizaapp.navigation.loginRoute
+import br.edu.ifal.fiscalizaapp.navigation.registerRoute
 import br.edu.ifal.fiscalizaapp.navigation.protocolRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 import br.edu.ifal.fiscalizaapp.ui.theme.DarkGray
@@ -66,7 +65,7 @@ class MainActivity : ComponentActivity() {
         BottomNavBarItem(
             label = "FAQ",
             icon = Icons.Outlined.Info,
-            route = exampleRoute
+            route = registerRoute
         )
     )
 
@@ -141,7 +140,6 @@ class MainActivity : ComponentActivity() {
                 NavigationBarItem(
                     selected = selectedItem.label == item.label,
                     onClick = {
-                        Log.i("TAG", item.label)
                         onItemChanged(item)
                     },
                     icon = {
