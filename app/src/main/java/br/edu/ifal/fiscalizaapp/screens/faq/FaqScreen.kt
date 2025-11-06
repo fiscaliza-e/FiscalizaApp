@@ -118,7 +118,7 @@ fun FaqScreen(
                 }
             }
             Spacer(modifier = Modifier.padding(16.dp))
-            FaleConoscoText(
+            ContactUsText(
                 onClicked = {}
             )
             Spacer(modifier = Modifier.padding(16.dp))
@@ -127,7 +127,7 @@ fun FaqScreen(
 }
 
 @Composable
-fun FaleConoscoText(
+fun ContactUsText(
     onClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
