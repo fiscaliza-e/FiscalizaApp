@@ -19,4 +19,5 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE cpf = :cpf LIMIT 1")
     suspend fun getUserByCpf(cpf: String): UserEntity?
+
 }

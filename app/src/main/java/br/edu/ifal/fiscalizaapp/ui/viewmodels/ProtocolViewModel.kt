@@ -8,16 +8,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-sealed class UiState {
-    object Loading : UiState()
-    data class Success(val protocols: List<Protocol>) : UiState()
-    data class Error(val message: String) : UiState()
-}
-
 class ProtocolViewModel(private val repository: ProtocolRepository) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
-    val uiState: StateFlow<UiState> = _uiState
+    private val _uiState = MutableStateFlow<UiState<List<Protocol>>>(UiState.Loading)
+    val uiState: StateFlow<UiState<List<Protocol>>> = _uiState
 
     init {
         fetchProtocolsByUserId(3)
@@ -28,7 +22,7 @@ class ProtocolViewModel(private val repository: ProtocolRepository) : ViewModel(
             _uiState.value = UiState.Loading
             try {
                 val protocols = repository.getProtocols()
-                _uiState.value = UiState.Success(protocols)
+                _uiState.value = UiState.Success(data = protocols)
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(e.message ?: "Unknown error")
             }
@@ -40,7 +34,7 @@ class ProtocolViewModel(private val repository: ProtocolRepository) : ViewModel(
             _uiState.value = UiState.Loading
             try {
                 val protocols = repository.getProtocolsByUserId(userId)
-                _uiState.value = UiState.Success(protocols)
+                _uiState.value = UiState.Success(data = protocols)
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(e.message ?: "Unknown error")
             }
