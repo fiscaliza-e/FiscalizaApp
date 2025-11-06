@@ -20,11 +20,10 @@ fun AppNavHost(navController: NavHostController) {
         exampleScreen(navController)
         loginScreen(navController)
         faqScreen(navController)
-
+        registerScreen(navController)
 
         composable(route = categoryListRoute) {
             CategoryListScreen(navController = navController)
-
         }
     }
 }
