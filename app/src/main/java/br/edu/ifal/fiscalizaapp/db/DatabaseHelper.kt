@@ -8,24 +8,29 @@ import br.edu.ifal.fiscalizaapp.model.CategoryEntity
 import br.edu.ifal.fiscalizaapp.model.UserEntity
 
 @Database(
-    version = 1,
+    version = 4,
     entities = [CategoryEntity::class, UserEntity::class]
 )
-
 abstract class DatabaseHelper : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun userDao(): UserDao
-    
+
     companion object {
-         fun getInstance(context: Context): DatabaseHelper {
-             return Room.databaseBuilder(
-                 context,
-                 DatabaseHelper::class.java,
-                 "fiscalizae.db"
-             )
-             .fallbackToDestructiveMigration(dropAllTables = true)
-             .build()
-         }
+        @Volatile
+        private var INSTANCE: DatabaseHelper? = null
+
+        fun getInstance(context: Context): DatabaseHelper {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    DatabaseHelper::class.java,
+                    "fiscalizae.db"
+                )
+                    .fallbackToDestructiveMigration(dropAllTables = true)
+                    .build()
+                INSTANCE = instance
+                instance
+            }
+        }
     }
 }
-

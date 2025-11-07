@@ -6,6 +6,10 @@ val initialUser = UserEntity(
     name = "Fulano de Tal da Silva",
     cpf = "12345678910",
     address = "Rua das Flores, 123 - Jardim das Amoras",
-    profileImage = null
+    profileImage = null,
+    apiId = 10,
+    id = 100,
+    email = "divaldo@gmail.com",
+    password = "12345678"
 )
 

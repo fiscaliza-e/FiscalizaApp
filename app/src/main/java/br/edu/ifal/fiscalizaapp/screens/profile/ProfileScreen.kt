@@ -47,9 +47,7 @@ fun ProfileScreen(
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
-            if (dao.getUserCount() == 0) {
-                dao.insertUser(initialUser)
-            }
+            // TODO: Get the user logged in
             user = dao.getUser()
         }
     }

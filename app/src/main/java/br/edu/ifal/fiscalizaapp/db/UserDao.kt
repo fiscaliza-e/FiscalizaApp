@@ -9,19 +9,28 @@ import br.edu.ifal.fiscalizaapp.model.UserEntity
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM user LIMIT 1")
+    @Query("SELECT * FROM users LIMIT 1")
     suspend fun getUser(): UserEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: UserEntity)
 
+    @Query("SELECT * FROM users WHERE apiId = :apiId LIMIT 1")
+    suspend fun getUserByApiId(apiId: Int): UserEntity?
+
     @Update
     suspend fun updateUser(user: UserEntity)
 
-    @Query("DELETE FROM user WHERE id = :userId")
+    @Query("SELECT * FROM users WHERE email = :email COLLATE NOCASE LIMIT 1")
+    suspend fun getUserByEmail(email: String): UserEntity?
+
+    @Query("DELETE FROM users WHERE id = :userId")
     suspend fun deleteUser(userId: Long)
 
-    @Query("SELECT COUNT(*) FROM user")
+    @Query("SELECT COUNT(*) FROM users")
     suspend fun getUserCount(): Int
-}
 
+    @Query("SELECT * FROM users WHERE cpf = :cpf LIMIT 1")
+    suspend fun getUserByCpf(cpf: String): UserEntity?
+
+}
