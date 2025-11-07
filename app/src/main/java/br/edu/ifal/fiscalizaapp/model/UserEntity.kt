@@ -13,6 +13,13 @@ data class UserEntity(
     val apiId: Int?,
     val name: String,
     val cpf: String,
+    val address: String,
+    val profileImage: String? = null,
     val email: String,
     val password: String,
-)
+) {
+    fun getMaskedCpf(): String {
+        if (cpf.length < 11) return cpf
+        return "${cpf.take(3)}.${cpf.substring(3, 6)}****-${cpf.takeLast(2)}"
+    }
+}

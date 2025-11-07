@@ -8,7 +8,7 @@ import br.edu.ifal.fiscalizaapp.model.CategoryEntity
 import br.edu.ifal.fiscalizaapp.model.UserEntity
 
 @Database(
-    version = 3,
+    version = 4,
     entities = [CategoryEntity::class, UserEntity::class]
 )
 abstract class DatabaseHelper : RoomDatabase() {
@@ -26,7 +26,7 @@ abstract class DatabaseHelper : RoomDatabase() {
                     DatabaseHelper::class.java,
                     "fiscalizae.db"
                 )
-                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .build()
                 INSTANCE = instance
                 instance

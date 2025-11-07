@@ -19,6 +19,7 @@ fun AppNavHost(navController: NavHostController) {
         protocolScreen(navController)
         exampleScreen(navController)
         loginScreen(navController)
+        profileScreen(navController)
         faqScreen(navController)
         registerScreen(navController)
 

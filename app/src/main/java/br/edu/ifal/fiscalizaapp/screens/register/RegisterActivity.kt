@@ -416,7 +416,8 @@ private fun handleSubmitRegistration(
                             name = apiUser.name,
                             cpf = apiUser.cpf.filter { it.isDigit() },
                             email = apiUser.email.trim(),
-                            password = "12345678"
+                            password = "12345678",
+                            address = "test test test"
                         )
                     }
 
@@ -441,7 +442,8 @@ private fun handleSubmitRegistration(
                             name = formState.fullName.trim(),
                             cpf = formCpfCleaned,
                             email = formEmailCleaned,
-                            password = formState.password
+                            password = formState.password,
+                            address = "test test test"
                         )
 
                         userDao.insertUser(newUser)
