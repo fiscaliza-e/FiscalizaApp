@@ -74,8 +74,8 @@ fun Button(
     }
 
     val contentPadding = when (variant) {
-        is ButtonVariant.Link -> PaddingValues(horizontal = 0.dp, vertical = 0.dp) // Padding pequeno
-        else -> PaddingValues(horizontal = 24.dp, vertical = 12.dp) // Padding padrão
+        is ButtonVariant.Link -> PaddingValues(horizontal = 0.dp, vertical = 0.dp)
+        else -> PaddingValues(horizontal = 24.dp, vertical = 12.dp)
     }
 
     Button(
