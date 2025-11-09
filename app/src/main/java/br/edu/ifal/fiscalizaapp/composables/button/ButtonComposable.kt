@@ -73,13 +73,18 @@ fun Button(
         )
     }
 
+    val contentPadding = when (variant) {
+        is ButtonVariant.Link -> PaddingValues(horizontal = 0.dp, vertical = 0.dp) // Padding pequeno
+        else -> PaddingValues(horizontal = 24.dp, vertical = 12.dp) // Padding padrão
+    }
+
     Button(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
         colors = colors,
         border = border,
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
+        contentPadding = contentPadding,
         shape = buttonShape,
     ) {
         if (leftIcon != null) {
