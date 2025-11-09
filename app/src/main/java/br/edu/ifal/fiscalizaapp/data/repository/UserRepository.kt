@@ -5,4 +5,7 @@ import br.edu.ifal.fiscalizaapp.data.remote.ModelService
 class UserRepository(private val modelService: ModelService) {
 
     suspend fun getUsers() = modelService.getUsers()
+
+    suspend fun getUserById(userId: Int) = modelService.getUserById(userId)
+
 }

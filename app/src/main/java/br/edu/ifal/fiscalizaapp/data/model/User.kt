@@ -10,5 +10,8 @@ data class User(
     val zipCode: String,
     val cpf: String,
     @SerializedName("phoneNumber")
-    val phoneNumber: String
+    val phoneNumber: String,
+
+    val password: String,
+    val agreeToTerms: Boolean
 )

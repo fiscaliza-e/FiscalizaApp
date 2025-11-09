@@ -48,6 +48,9 @@ class ViewModelFactory : ViewModelProvider.Factory {
             modelClass.isAssignableFrom(UserViewModel::class.java) -> {
                 UserViewModel(userRepository) as T
             }
+            modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
+                HomeViewModel(userRepository) as T
+            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }
