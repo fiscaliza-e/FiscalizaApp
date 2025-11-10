@@ -1,6 +1,7 @@
 package br.edu.ifal.fiscalizaapp.data.remote
 
 import br.edu.ifal.fiscalizaapp.data.model.FaqItem
+import br.edu.ifal.fiscalizaapp.data.model.NetworkCategory
 import br.edu.ifal.fiscalizaapp.data.model.Protocol
 import br.edu.ifal.fiscalizaapp.data.model.User
 import retrofit2.http.GET
@@ -22,5 +23,8 @@ interface ModelService {
 
     @GET("user/{id}")
     suspend fun getUserById(@Path("id") id: Int): User
+
+    @GET("categories")
+    suspend fun getCategories(): List<NetworkCategory>
 
 }

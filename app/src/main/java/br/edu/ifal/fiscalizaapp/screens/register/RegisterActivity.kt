@@ -1,7 +1,6 @@
 package br.edu.ifal.fiscalizaapp.screens.register
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -58,8 +57,8 @@ private data class RegisterFormState(
 fun RegisterScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    cepViewModel: CepViewModel = viewModel(factory = ViewModelFactory()),
-    userViewModel: UserViewModel = viewModel(factory = ViewModelFactory())
+    cepViewModel: CepViewModel = viewModel(factory = ViewModelFactory(LocalContext.current)),
+    userViewModel: UserViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
     Scaffold(containerColor = Color.White) { innerPadding ->
 

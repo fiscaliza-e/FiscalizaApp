@@ -23,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.card.CategoryCard
 import br.edu.ifal.fiscalizaapp.navigation.categoryListRoute
+import br.edu.ifal.fiscalizaapp.navigation.newProtocolRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
@@ -51,7 +53,7 @@ private val categories = listOf(
 fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(factory = ViewModelFactory())
+    viewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
     val userUiState by viewModel.uiState.collectAsState()
 
@@ -96,7 +98,9 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(4.dp))
                     Button(
                         text = "Fazer Nova Reclamação",
-                        onClick = {},
+                        onClick = {
+                            navController.navigate(newProtocolRoute)
+                        },
                         variant = ButtonVariant.Primary,
                         modifier = Modifier.fillMaxWidth()
                     )
