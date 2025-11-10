@@ -8,4 +8,8 @@ open class LocalProtocolRepository (private val protocolDao: ProtocolDao) {
     open suspend fun saveProtocol(protocol: ProtocolEntity) {
         protocolDao.insertProtocol(protocol)
     }
+
+    open suspend fun getAllProtocols(): List<ProtocolEntity> {
+        return protocolDao.getAllProtocols()
+    }
 }

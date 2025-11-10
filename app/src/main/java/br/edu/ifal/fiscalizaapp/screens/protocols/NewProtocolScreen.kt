@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -133,7 +134,8 @@ fun NewProtocolScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                enabled = insertUiState != InsertUiState.Loading && isFormValid
+                enabled = insertUiState != InsertUiState.Loading && isFormValid,
+                shape = RoundedCornerShape(8.dp)
             ) {
                 if (insertUiState == InsertUiState.Loading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
@@ -286,7 +288,7 @@ fun NewProtocolScreen(
                     value = numero,
                     onValueChange = { numero = it },
                     modifier = Modifier.width(100.dp),
-                    type = InputType.Text,
+                    type = InputType.Number,
                     enabled = !useMyLocation,
                     placeholder = "Nº / S/N"
                 )
@@ -300,7 +302,7 @@ fun NewProtocolScreen(
                 enabled = !useMyLocation,
                 placeholder = "Digite o ponto de referência"
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
