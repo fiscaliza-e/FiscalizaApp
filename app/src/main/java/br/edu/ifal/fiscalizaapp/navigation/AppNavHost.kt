@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavHost(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = homeRoute) {
+    NavHost(navController = navController, startDestination = loginRoute) {
         homeScreen(navController)
         protocolScreen(navController)
         exampleScreen(navController)

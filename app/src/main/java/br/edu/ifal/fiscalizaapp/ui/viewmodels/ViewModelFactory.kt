@@ -47,18 +47,16 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        val service = RetrofitHelper.getInstance().create(ModelService::class.java)
+
         return when {
             modelClass.isAssignableFrom(ProtocolViewModel::class.java) -> {
-                ProtocolViewModel(protocolRepository) as T
+                val repository = ProtocolRepository(service)
+                ProtocolViewModel(repository) as T
             }
             modelClass.isAssignableFrom(FaqViewModel::class.java) -> {
-                FaqViewModel(faqRepository) as T
-            }
-            modelClass.isAssignableFrom(CepViewModel::class.java) -> {
-                CepViewModel(cepRepository) as T
-            }
-            modelClass.isAssignableFrom(UserViewModel::class.java) -> {
-                UserViewModel(userRepository) as T
+                val repository = FaqRepository(service)
+                FaqViewModel(repository) as T
             }
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
                 HomeViewModel(userRepository) as T
