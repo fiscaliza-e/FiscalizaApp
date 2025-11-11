@@ -1,5 +1,7 @@
 package br.edu.ifal.fiscalizaapp.screens.login
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -7,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -17,7 +20,14 @@ import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.input.InputType
 import br.edu.ifal.fiscalizaapp.composables.input.InputStyle
 import br.edu.ifal.fiscalizaapp.composables.input.InputVariant
+import br.edu.ifal.fiscalizaapp.db.DatabaseHelper
+import br.edu.ifal.fiscalizaapp.navigation.homeRoute
+import br.edu.ifal.fiscalizaapp.session.SessionManager
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
@@ -25,6 +35,10 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
 
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
+        var isLoadingLogin by remember { mutableStateOf(false) }
+        var errorMessage by remember { mutableStateOf<String?>(null) }
+        val scope = rememberCoroutineScope()
+        val context = LocalContext.current
 
         Column(
             modifier = Modifier
@@ -76,10 +90,34 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 text = "Entrar",
-                onClick = { /* TODO: Implementar navegação */ },
+                onClick = {
+                    handleSubmitlogin(
+                        scope = scope,
+                        context = context,
+                        email = email,
+                        password = password,
+                        setIsLoading = { isLoadingLogin = it },
+                        setErrorMessage = { errorMessage = it },
+                        onSuccess = {
+                            navController.navigate(homeRoute)
+                        }
+                    )
+                },
                 variant = ButtonVariant.Primary,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            errorMessage?.let {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = it,
+                    color = Color.Red,
+                    fontSize = 12.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row {
                 Text(
                     text = "Não possui uma conta?",
@@ -91,6 +129,56 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                     color = PrimaryGreen,
                     fontWeight = FontWeight.Bold,
                 )
+            }
+        }
+    }
+}
+
+private fun handleSubmitlogin(
+    scope: CoroutineScope,
+    context: Context,
+    email: String,
+    password: String,
+    setIsLoading: (Boolean) -> Unit,
+    setErrorMessage: (String?) -> Unit,
+    onSuccess: () -> Unit
+) {
+    setIsLoading(true)
+    setErrorMessage(null)
+
+    Log.d("LOGIN_ATTEMPT", "Email: '${email.trim()}', Senha: '${password}'")
+
+    if (email.isBlank() || password.isBlank()) {
+        setErrorMessage("Por favor, preencha todos os campos.")
+        setIsLoading(false)
+        return
+    }
+
+    scope.launch(Dispatchers.IO) {
+        try {
+            val db = DatabaseHelper.getInstance(context)
+            val userDao = db.userDao()
+            val user = userDao.getUserByEmail(email.trim())
+
+            Log.d("LOGIN_ATTEMPT", "Usuário encontrado no banco: ${user?.email}")
+
+            withContext(Dispatchers.Main) {
+                if (user != null && user.password == password) {
+                    user.apiId?.let { id ->
+                        val sessionManager = SessionManager(context)
+                        sessionManager.saveUserApiId(id)
+                        Log.d("LOGIN_SUCCESS", "User API ID saved: $id")
+                    }
+                    onSuccess()
+                } else {
+                    setErrorMessage("E-mail ou senha inválidos.")
+                }
+                setIsLoading(false)
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                setErrorMessage("Ocorreu um erro ao tentar fazer login: ${e.message}")
+                setIsLoading(false)
             }
         }
     }

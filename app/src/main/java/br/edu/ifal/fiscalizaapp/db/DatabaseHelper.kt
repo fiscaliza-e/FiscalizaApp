@@ -4,12 +4,17 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import br.edu.ifal.fiscalizaapp.model.CategoryEntity
 import br.edu.ifal.fiscalizaapp.model.UserEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Database(
-    version = 4,
-    entities = [CategoryEntity::class, UserEntity::class]
+    version = 6,
+    entities = [CategoryEntity::class, UserEntity::class],
+    exportSchema = false
 )
 abstract class DatabaseHelper : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
@@ -26,11 +31,27 @@ abstract class DatabaseHelper : RoomDatabase() {
                     DatabaseHelper::class.java,
                     "fiscalizae.db"
                 )
-                    .fallbackToDestructiveMigration(dropAllTables = true)
+                    .fallbackToDestructiveMigration()
+                    .addCallback(DatabaseCallback(context))
                     .build()
                 INSTANCE = instance
                 instance
             }
+        }
+    }
+
+    private class DatabaseCallback(private val context: Context) : RoomDatabase.Callback() {
+
+        override fun onCreate(db: SupportSQLiteDatabase) {
+            super.onCreate(db)
+            CoroutineScope(Dispatchers.IO).launch {
+                populateDatabase()
+            }
+        }
+
+        suspend fun populateDatabase() {
+            val userDao = getInstance(context).userDao()
+            userDao.insertUser(initialUser)
         }
     }
 }

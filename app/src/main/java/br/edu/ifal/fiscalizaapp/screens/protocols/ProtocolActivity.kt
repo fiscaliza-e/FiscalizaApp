@@ -14,23 +14,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import br.edu.ifal.fiscalizaapp.composables.protocolList.ProtocolList
 import br.edu.ifal.fiscalizaapp.data.model.Protocol
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModel
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelV2
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.UiState
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelFactoryV2
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProtocolScreen(
     navController: NavController,
-    modifier: Modifier = Modifier,
-    viewModel: ProtocolViewModel = viewModel(factory = ViewModelFactory())
+    modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val viewModel: ProtocolViewModelV2 = viewModel(factory = ProtocolViewModelFactoryV2(context))
+
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(containerColor = Color.White) { innerPadding ->

@@ -9,10 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -21,7 +19,6 @@ import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,9 +31,9 @@ import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.model.BottomNavBarItem
 import br.edu.ifal.fiscalizaapp.navigation.AppNavHost
-import br.edu.ifal.fiscalizaapp.navigation.exampleRoute
 import br.edu.ifal.fiscalizaapp.navigation.faqRoute
 import br.edu.ifal.fiscalizaapp.navigation.homeRoute
+import br.edu.ifal.fiscalizaapp.navigation.loginRoute
 import br.edu.ifal.fiscalizaapp.navigation.protocolRoute
 import br.edu.ifal.fiscalizaapp.navigation.profileRoute
 import br.edu.ifal.fiscalizaapp.navigation.registerRoute
@@ -67,7 +64,7 @@ class MainActivity : ComponentActivity() {
         BottomNavBarItem(
             label = "FAQ",
             icon = Icons.Outlined.Info,
-            route = registerRoute
+            route = faqRoute
         )
     )
 
