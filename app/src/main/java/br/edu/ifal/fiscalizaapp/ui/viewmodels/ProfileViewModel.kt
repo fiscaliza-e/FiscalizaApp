@@ -27,22 +27,17 @@ class ProfileViewModel(
         viewModelScope.launch {
             _pictureState.value = ProfilePictureState.Loading
             try {
-                // Busca o usuário local do banco de dados
                 val localUser = userDao.getUser()
                 
                 if (localUser?.apiId != null) {
-                    // Se tiver apiId, busca o usuário da API para pegar a pictureUrl
                     val apiUser = userRepository.getUserById(localUser.apiId)
-                    // Usa a URL da API (ou null se estiver vazia)
                     val pictureUrl = apiUser.pictureUrl?.takeIf { it.isNotBlank() }
                     _pictureState.value = ProfilePictureState.Success(pictureUrl)
                 } else {
-                    // Se não tiver apiId, usa a foto local (se existir)
                     val pictureUrl = localUser?.profileImage?.takeIf { it.isNotBlank() }
                     _pictureState.value = ProfilePictureState.Success(pictureUrl)
                 }
             } catch (e: Exception) {
-                // Em caso de erro, tenta usar a foto local
                 try {
                     val localUser = userDao.getUser()
                     val pictureUrl = localUser?.profileImage?.takeIf { it.isNotBlank() }
