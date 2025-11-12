@@ -2,6 +2,7 @@ package br.edu.ifal.fiscalizaapp.screens.login
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import br.edu.ifal.fiscalizaapp.composables.input.InputStyle
 import br.edu.ifal.fiscalizaapp.composables.input.InputVariant
 import br.edu.ifal.fiscalizaapp.db.DatabaseHelper
 import br.edu.ifal.fiscalizaapp.navigation.homeRoute
+import br.edu.ifal.fiscalizaapp.navigation.registerRoute
 import br.edu.ifal.fiscalizaapp.session.SessionManager
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import kotlinx.coroutines.CoroutineScope
@@ -128,6 +130,9 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                     fontSize = 14.sp,
                     color = PrimaryGreen,
                     fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable { 
+                        navController.navigate(registerRoute)
+                    }
                 )
             }
         }

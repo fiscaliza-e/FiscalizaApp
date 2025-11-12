@@ -1,6 +1,7 @@
 package br.edu.ifal.fiscalizaapp.screens.register
 
 import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -350,6 +351,9 @@ fun RegisterScreen(
                     fontSize = 14.sp,
                     color = PrimaryGreen,
                     fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        navController.navigate(loginRoute)
+                    }
                 )
             }
 

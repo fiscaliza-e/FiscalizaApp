@@ -20,12 +20,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
@@ -41,11 +45,14 @@ import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 import br.edu.ifal.fiscalizaapp.ui.theme.DarkGray
 import br.edu.ifal.fiscalizaapp.ui.theme.LightGray
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.UiState
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
 
-    val bottomNavBarItems = listOf(
+    private val bottomNavBarItems = listOf(
         BottomNavBarItem(
             label = "Início",
             icon = Icons.Default.Home,
@@ -75,11 +82,22 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
                     var selectedItem by remember {
-                        val item = bottomNavBarItems.first()
-                        mutableStateOf(item)
+                        mutableStateOf(bottomNavBarItems.first())
                     }
+
+                    val homeViewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
+                    val userUiState by homeViewModel.uiState.collectAsState()
+
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+
+                    val standaloneRoutes = listOf(loginRoute, registerRoute)
+                    val shouldShowBars = currentRoute != null && currentRoute !in standaloneRoutes
+
                     FiscalizaApp(
+                        shouldShowBars = shouldShowBars,
                         selectedItem = selectedItem,
+                        userUiState = userUiState,
                         onBottomNavBarItemChange = { item ->
                             selectedItem = item
                             navController.navigate(item.route) {
@@ -101,20 +119,25 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun FiscalizaApp(
         modifier: Modifier = Modifier,
+        shouldShowBars: Boolean, 
         selectedItem: BottomNavBarItem,
+        userUiState: UiState<*>, 
         onBottomNavBarItemChange: (BottomNavBarItem) -> Unit,
         content: @Composable () -> Unit
     ) {
         Scaffold(
             containerColor = Color.White,
             topBar = {
-                AppHeader(AppHeaderType.MAIN_SCREEN) },
+                    AppHeader(AppHeaderType.MAIN_SCREEN)
+            },
             bottomBar = {
-                BottomNavBar(
-                    modifier = Modifier,
-                    selectedItem = selectedItem,
-                    onItemChanged = onBottomNavBarItemChange
-                )
+                if (shouldShowBars && userUiState is UiState.Success) {
+                    BottomNavBar(
+                        modifier = Modifier,
+                        selectedItem = selectedItem,
+                        onItemChanged = onBottomNavBarItemChange
+                    )
+                }
             }
         ) { innerPadding ->
             Surface(
@@ -123,7 +146,6 @@ class MainActivity : ComponentActivity() {
                 content()
             }
         }
-
     }
 
     @Composable
@@ -137,6 +159,7 @@ class MainActivity : ComponentActivity() {
         ) {
             bottomNavBarItems.forEach { item ->
                 NavigationBarItem(
+                    enabled = true,
                     selected = selectedItem.label == item.label,
                     onClick = {
                         onItemChanged(item)
@@ -160,6 +183,5 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-
     }
 }

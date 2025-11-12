@@ -18,11 +18,7 @@ class ProtocolViewModelV2(
     private val _uiState = MutableStateFlow<UiState<List<Protocol>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Protocol>>> = _uiState
 
-    init {
-        fetchUserProtocols()
-    }
-
-    private fun fetchUserProtocols() {
+    fun fetchUserProtocols() {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
