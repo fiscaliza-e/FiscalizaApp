@@ -16,16 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.protocolList.ProtocolList
 import br.edu.ifal.fiscalizaapp.data.model.Protocol
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelV2
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelV2
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.UiState
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelFactoryV2
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelFactoryV2
 
 @RequiresApi(Build.VERSION_CODES.O)

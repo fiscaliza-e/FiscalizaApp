@@ -5,13 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import br.edu.ifal.fiscalizaapp.model.CategoryEntity
 import br.edu.ifal.fiscalizaapp.model.ProtocolEntity
 import br.edu.ifal.fiscalizaapp.model.UserEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
