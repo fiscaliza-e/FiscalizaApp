@@ -12,7 +12,6 @@ import br.edu.ifal.fiscalizaapp.data.repository.CepRepository
 import br.edu.ifal.fiscalizaapp.data.repository.FaqRepository
 import br.edu.ifal.fiscalizaapp.data.repository.LocalProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.repository.ProtocolRepository
-import br.edu.ifal.fiscalizaapp.data.repository.UserRepository
 import br.edu.ifal.fiscalizaapp.db.DatabaseHelper
 
 class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
@@ -46,7 +45,8 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
 
         return when {
             modelClass.isAssignableFrom(ProtocolViewModel::class.java) -> {
-                ProtocolViewModel(protocolRepository) as T
+                val repository = ProtocolRepository(service)
+                ProtocolViewModel(repository) as T
             }
             modelClass.isAssignableFrom(FaqViewModel::class.java) -> {
                 FaqViewModel(faqRepository) as T
