@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -29,7 +30,7 @@ import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 fun ProtocolScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: ProtocolViewModel = viewModel(factory = ViewModelFactory())
+    viewModel: ProtocolViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

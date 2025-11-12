@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +41,7 @@ import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 fun FaqScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: FaqViewModel = viewModel(factory = ViewModelFactory())
+    viewModel: FaqViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
