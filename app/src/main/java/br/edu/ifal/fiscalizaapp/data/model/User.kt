@@ -11,7 +11,8 @@ data class User(
     val cpf: String,
     @SerializedName("phoneNumber")
     val phoneNumber: String,
-
+    @SerializedName("pictureUrl")
+    val pictureUrl: String? = null,
     val password: String,
     val agreeToTerms: Boolean
 )

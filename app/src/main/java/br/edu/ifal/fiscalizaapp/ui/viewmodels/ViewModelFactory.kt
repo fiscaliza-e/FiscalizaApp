@@ -46,6 +46,10 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
         LocalProtocolRepository(DatabaseHelper.getInstance(context).protocolDao())
     }
 
+    private val userDao by lazy {
+        DatabaseHelper.getInstance(context).userDao()
+    }
+
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(ProtocolViewModel::class.java) -> {
@@ -65,6 +69,9 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
             }
             modelClass.isAssignableFrom(NewProtocolViewModel::class.java) -> {
                 NewProtocolViewModel(categoryRepository, localProtocolRepository) as T
+            }
+            modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {
+                ProfileViewModel(userRepository, userDao) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }

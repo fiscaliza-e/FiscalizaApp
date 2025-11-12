@@ -9,7 +9,7 @@ import br.edu.ifal.fiscalizaapp.model.ProtocolEntity
 import br.edu.ifal.fiscalizaapp.model.UserEntity
 
 @Database(
-    version = 4,
+    version = 5,
     entities = [CategoryEntity::class, UserEntity::class, ProtocolEntity::class]
 )
 abstract class DatabaseHelper : RoomDatabase() {
