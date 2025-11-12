@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,9 +31,12 @@ import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.card.CardBase
 import br.edu.ifal.fiscalizaapp.db.DatabaseHelper
-import br.edu.ifal.fiscalizaapp.db.initialUser
 import br.edu.ifal.fiscalizaapp.model.UserEntity
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProfilePictureState
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProfileViewModel
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
+import coil.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -45,11 +50,16 @@ fun ProfileScreen(
     val dao = DatabaseHelper.getInstance(context).userDao()
     var user by remember { mutableStateOf<UserEntity?>(null) }
 
+    val viewModelFactory = remember { ViewModelFactory(context) }
+    val profileViewModel = remember { viewModelFactory.create(ProfileViewModel::class.java) }
+    val pictureState by profileViewModel.pictureState.collectAsState()
+
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             // TODO: Get the user logged in
             user = dao.getUser()
         }
+        profileViewModel.fetchProfilePicture()
     }
 
     Scaffold(
@@ -85,16 +95,56 @@ fun ProfileScreen(
                         shape = CircleShape,
                         color = PrimaryGreen.copy(alpha = 0.2f)
                     ) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Foto de perfil",
-                                tint = PrimaryGreen,
-                                modifier = Modifier.size(60.dp)
-                            )
+                        when (val state = pictureState) {
+                            is ProfilePictureState.Success -> {
+                                val pictureUrl = state.pictureUrl
+                                if (!pictureUrl.isNullOrBlank()) {
+                                    AsyncImage(
+                                        model = pictureUrl,
+                                        contentDescription = "Foto de perfil",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                } else {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Person,
+                                            contentDescription = "Foto de perfil",
+                                            tint = PrimaryGreen,
+                                            modifier = Modifier.size(60.dp)
+                                        )
+                                    }
+                                }
+                            }
+                            is ProfilePictureState.Loading -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = "Carregando foto de perfil",
+                                        tint = PrimaryGreen,
+                                        modifier = Modifier.size(60.dp)
+                                    )
+                                }
+                            }
+                            is ProfilePictureState.Error -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = "Foto de perfil",
+                                        tint = PrimaryGreen,
+                                        modifier = Modifier.size(60.dp)
+                                    )
+                                }
+                            }
                         }
                     }
                     
