@@ -9,6 +9,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -18,20 +19,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import br.edu.ifal.fiscalizaapp.composables.protocolList.ProtocolList
 import br.edu.ifal.fiscalizaapp.data.model.Protocol
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModel
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelV2
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.UiState
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelFactoryV2
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProtocolScreen(
     navController: NavController,
-    modifier: Modifier = Modifier,
-    viewModel: ProtocolViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
+    modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val viewModel: ProtocolViewModelV2 = viewModel(factory = ProtocolViewModelFactoryV2(context))
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserProtocols()
+    }
+
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(containerColor = Color.White) { innerPadding ->
