@@ -3,7 +3,7 @@ package br.edu.ifal.fiscalizaapp.ui.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import br.edu.ifal.fiscalizaapp.composables.session.SessionManager // <--- IMPORTANTE: Adicione este import
+import br.edu.ifal.fiscalizaapp.composables.session.SessionManager
 import br.edu.ifal.fiscalizaapp.data.api.cep.CepRetrofitHelper
 import br.edu.ifal.fiscalizaapp.data.api.cep.CepAPI
 import br.edu.ifal.fiscalizaapp.data.api.RetrofitHelper
@@ -18,6 +18,8 @@ import br.edu.ifal.fiscalizaapp.data.repository.LocalProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.repository.ProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.repository.UserRepository
 import br.edu.ifal.fiscalizaapp.data.db.DatabaseHelper
+import br.edu.ifal.fiscalizaapp.data.db.dao.UserDao
+
 
 class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
 
@@ -65,6 +67,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
         CategoryRepository(categoryAPI, database.categoryDao())
     }
 
+    // TODO: O que é isso aqui abaixo? Pra que serve?
     private val localProtocolRepository: LocalProtocolRepository by lazy {
         LocalProtocolRepository(DatabaseHelper.getInstance(context).protocolDao())
     }
@@ -86,11 +89,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                 HomeViewModel(userRepository, context) as T
             }
             modelClass.isAssignableFrom(NewProtocolViewModel::class.java) -> {
-                NewProtocolViewModel(
-                    categoryRepository,
-                    localProtocolRepository,
-                    sessionManager
-                ) as T
+                NewProtocolViewModel(categoryRepository, localProtocolRepository, sessionManager) as T
             }
             modelClass.isAssignableFrom(CepViewModel::class.java) -> {
                 CepViewModel(cepRepository) as T

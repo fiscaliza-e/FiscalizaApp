@@ -21,9 +21,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.protocollist.ProtocolList
 import br.edu.ifal.fiscalizaapp.model.Protocol
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelV2
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModel
 import br.edu.ifal.fiscalizaapp.ui.state.UiState
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelFactoryV2
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -32,7 +32,7 @@ fun ProtocolScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val viewModel: ProtocolViewModelV2 = viewModel(factory = ProtocolViewModelFactoryV2(context))
+    val viewModel: ProtocolViewModel = viewModel(factory = ProtocolViewModelFactory(context))
 
     LaunchedEffect(Unit) {
         viewModel.fetchUserProtocols()
