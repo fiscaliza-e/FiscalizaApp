@@ -46,6 +46,9 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
         var errorMessage by remember { mutableStateOf<String?>(null) }
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
+        val sessionManager by remember {
+            mutableStateOf(SessionManager(context))
+        }
 
         Column(
             modifier = Modifier
@@ -127,6 +130,7 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                         password = password,
                         setIsLoading = { isLoadingLogin = it },
                         setErrorMessage = { errorMessage = it },
+                        sessionManager = sessionManager,
                         onSuccess = {
                             navController.navigate(homeRoute)
                         }
@@ -173,6 +177,7 @@ private fun handleSubmitlogin(
     password: String,
     setIsLoading: (Boolean) -> Unit,
     setErrorMessage: (String?) -> Unit,
+    sessionManager: SessionManager,
     onSuccess: () -> Unit
 ) {
     setIsLoading(true)
@@ -197,7 +202,6 @@ private fun handleSubmitlogin(
             withContext(Dispatchers.Main) {
                 if (user != null && user.password == password) {
                     user.apiId?.let { id ->
-                        val sessionManager = SessionManager(context)
                         sessionManager.saveUserApiId(id)
                         Log.d("LOGIN_SUCCESS", "User API ID saved: $id")
                     }
