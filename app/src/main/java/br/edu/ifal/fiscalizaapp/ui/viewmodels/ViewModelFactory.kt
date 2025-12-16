@@ -70,7 +70,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
 
         return when {
             modelClass.isAssignableFrom(ProtocolViewModel::class.java) -> {
-                ProtocolViewModel(protocolRepository) as T
+                ProtocolViewModel(protocolRepository, context) as T
             }
             modelClass.isAssignableFrom(FaqViewModel::class.java) -> {
                 FaqViewModel(faqRepository) as T
@@ -89,9 +89,6 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                 UserViewModel(userRepository) as T
             }
 
-            modelClass.isAssignableFrom(ProtocolViewModelV2::class.java) -> {
-                 ProtocolViewModelV2(protocolRepository, context) as T
-            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }
