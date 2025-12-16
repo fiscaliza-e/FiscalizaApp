@@ -28,6 +28,7 @@ import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.composables.protocollist.ProtocolList
 import br.edu.ifal.fiscalizaapp.model.Protocol
 import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.newProtocolRoute
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModel
 import br.edu.ifal.fiscalizaapp.ui.state.UiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelFactory
@@ -87,7 +88,10 @@ fun ProtocolScreen(
                 is UiState.Success -> {
                     ProtocolList(
                         protocols = state.data,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        onNewProtocolClick = {
+                            navController.navigate(newProtocolRoute)
+                        }
                     )
                 }
                 is UiState.Error -> {
@@ -124,7 +128,8 @@ fun ProtocolScreenPreview() {
     Scaffold(containerColor = Color.White) { innerPadding ->
         ProtocolList(
             protocols = mockProtocols,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            onNewProtocolClick = {}
         )
     }
 }
