@@ -28,11 +28,11 @@ import br.edu.ifal.fiscalizaapp.R
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.searchfilter.SearchFilter
-import br.edu.ifal.fiscalizaapp.model.Protocol
+import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ProtocolList(protocols: List<Protocol>, modifier: Modifier = Modifier) {
+fun ProtocolList(protocols: List<ProtocolEntity>, modifier: Modifier = Modifier) {
 
     if (protocols.isEmpty()) {
         Box(
@@ -91,7 +91,7 @@ fun ProtocolList(protocols: List<Protocol>, modifier: Modifier = Modifier) {
                     title = protocol.title,
                     description = protocol.description,
                     status = protocol.status,
-                    id = protocol.protocolNumber,
+                    id = protocol.protocolNumber ?: "",
                     date = protocol.date,
                     modifier = Modifier
                 )

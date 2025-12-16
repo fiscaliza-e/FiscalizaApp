@@ -13,10 +13,10 @@ import br.edu.ifal.fiscalizaapp.data.api.user.UserAPI
 import br.edu.ifal.fiscalizaapp.data.repository.CategoryRepository
 import br.edu.ifal.fiscalizaapp.data.repository.CepRepository
 import br.edu.ifal.fiscalizaapp.data.repository.FaqRepository
-import br.edu.ifal.fiscalizaapp.data.repository.LocalProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.repository.ProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.repository.UserRepository
 import br.edu.ifal.fiscalizaapp.data.db.DatabaseHelper
+import br.edu.ifal.fiscalizaapp.data.db.dao.ProtocolDao
 import br.edu.ifal.fiscalizaapp.data.db.dao.UserDao
 
 class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
@@ -40,13 +40,16 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
         DatabaseHelper.getInstance(context).userDao()
     }
 
+    private val protocolDao: ProtocolDao by lazy {
+        DatabaseHelper.getInstance(context).protocolDao()
+    }
 
     private val categoryAPI: CategoryAPI by lazy {
         RetrofitHelper.getInstance().create(CategoryAPI::class.java)
     }
 
     private val protocolRepository: ProtocolRepository by lazy {
-        ProtocolRepository(protocolAPI)
+        ProtocolRepository(protocolAPI, protocolDao)
     }
     private val faqRepository: FaqRepository by lazy {
         FaqRepository(faqAPI)
@@ -59,11 +62,6 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
     }
     private val categoryRepository: CategoryRepository by lazy {
         CategoryRepository(categoryAPI)
-    }
-
-    // TODO: O que é isso aqui abaixo? Pra que serve?
-    private val localProtocolRepository: LocalProtocolRepository by lazy {
-        LocalProtocolRepository(DatabaseHelper.getInstance(context).protocolDao())
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -79,7 +77,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                 HomeViewModel(userRepository) as T
             }
             modelClass.isAssignableFrom(NewProtocolViewModel::class.java) -> {
-                NewProtocolViewModel(categoryRepository, localProtocolRepository) as T
+                NewProtocolViewModel(categoryRepository, protocolRepository) as T
             }
 
             modelClass.isAssignableFrom(CepViewModel::class.java) -> {

@@ -1,13 +1,13 @@
 package br.edu.ifal.fiscalizaapp.navigation.screens.protocols
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,13 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.protocollist.ProtocolList
-import br.edu.ifal.fiscalizaapp.model.Protocol
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModel
-import br.edu.ifal.fiscalizaapp.ui.state.UiState
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.RefreshState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -34,11 +33,14 @@ fun ProtocolScreen(
     val context = LocalContext.current
     val viewModel: ProtocolViewModel = viewModel(factory = ProtocolViewModelFactory(context))
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchUserProtocols()
-    }
+    val protocols by viewModel.protocols.collectAsStateWithLifecycle(initialValue = emptyList())
+    val refreshState by viewModel.refreshState.collectAsStateWithLifecycle()
 
-    val uiState by viewModel.uiState.collectAsState()
+    LaunchedEffect(refreshState) {
+        if (refreshState is RefreshState.Error) {
+            Toast.makeText(context, (refreshState as RefreshState.Error).message, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Scaffold(containerColor = Color.White) { innerPadding ->
         Box(
@@ -47,51 +49,14 @@ fun ProtocolScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            when (val state = uiState) {
-                is UiState.Loading -> {
-                    CircularProgressIndicator()
-                }
-                is UiState.Success -> {
-                    ProtocolList(
-                        protocols = state.data,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-                is UiState.Error -> {
-                    Text(text = "Erro: ${state.message}")
-                }
+            ProtocolList(
+                protocols = protocols,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            if (refreshState is RefreshState.Loading) {
+                CircularProgressIndicator()
             }
         }
-    }
-}
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ProtocolScreenPreview() {
-    val mockProtocols = listOf(
-        Protocol(
-            title = "Buraco na rua principal",
-            description = "Buraco de grande porte próximo à esquina da Av. Central com a Rua das Flores, dificultando o tráfego.",
-            status = "PENDENTE",
-            protocolNumber = "P-0001",
-            date = "10-20-2025",
-            userId = 1
-        ),
-        Protocol(
-            title = "Lâmpada queimada em poste",
-            description = "Poste de iluminação em frente à escola municipal está apagado há mais de uma semana.",
-            status = "VISUALIZADO",
-            protocolNumber = "P-0002",
-            date = "10-18-2025",
-            userId = 2
-        )
-    )
-    Scaffold(containerColor = Color.White) { innerPadding ->
-        ProtocolList(
-            protocols = mockProtocols,
-            modifier = Modifier.padding(innerPadding)
-        )
     }
 }

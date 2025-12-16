@@ -3,7 +3,7 @@ package br.edu.ifal.fiscalizaapp.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.edu.ifal.fiscalizaapp.data.repository.CategoryRepository
-import br.edu.ifal.fiscalizaapp.data.repository.LocalProtocolRepository
+import br.edu.ifal.fiscalizaapp.data.repository.ProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +28,7 @@ sealed class CategoryUiState {
 
 open class NewProtocolViewModel(
     private val categoryRepository: CategoryRepository,
-    private val localProtocolRepository: LocalProtocolRepository
+    private val protocolRepository: ProtocolRepository
 ) : ViewModel() {
 
     private val _categoryUiState = MutableStateFlow<CategoryUiState>(CategoryUiState.Loading)
@@ -91,11 +91,12 @@ open class NewProtocolViewModel(
 
             try {
                 val status = "Pendente"
-                val userId = 3 // uso temporário
+                val userId = 3
                 val currentDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 
                 val newProtocol = ProtocolEntity(
-                    category = selectedCategory.title,
+                    protocolNumber = null,
+                    title = selectedCategory.title,
                     description = description,
                     cep = if (useMyLocation) "" else cep,
                     bairro = if (useMyLocation) "" else bairro,
@@ -108,7 +109,7 @@ open class NewProtocolViewModel(
                     date = currentDate
                 )
 
-                localProtocolRepository.saveProtocol(newProtocol)
+                protocolRepository.saveProtocol(newProtocol)
                 _insertUiState.value = InsertUiState.Success
             } catch (e: Exception) {
                 _insertUiState.value = InsertUiState.Error(e.message ?: "Erro ao salvar o protocolo.")
