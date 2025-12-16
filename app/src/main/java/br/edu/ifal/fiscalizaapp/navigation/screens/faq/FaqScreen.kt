@@ -31,7 +31,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.accordion.AccordionList
+import br.edu.ifal.fiscalizaapp.composables.dialog.LogoutDialog
+import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
+import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.model.AccordionItem
+import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.FaqViewModel
 import br.edu.ifal.fiscalizaapp.ui.state.UiState
@@ -48,7 +52,33 @@ fun FaqScreen(
 
     val scrollState = rememberScrollState()
 
-    Scaffold(containerColor = Color.White) { innerPadding ->
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutDialog) {
+        LogoutDialog(
+            onDismiss = { showLogoutDialog = false },
+            onConfirm = {
+                showLogoutDialog = false
+                viewModel.logout()
+                navController.navigate(loginRoute) {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        )
+    }
+
+    Scaffold(
+        containerColor = Color.White,
+        topBar = {
+            AppHeader(
+                type = AppHeaderType.MAIN_SCREEN,
+                onActionClick = {
+                    showLogoutDialog = true
+                }
+            )
+        }
+        ) { innerPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()

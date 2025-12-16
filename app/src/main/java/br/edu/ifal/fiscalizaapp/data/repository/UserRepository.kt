@@ -4,7 +4,9 @@ import br.edu.ifal.fiscalizaapp.data.api.user.UserAPI
 import br.edu.ifal.fiscalizaapp.data.db.dao.UserDao
 import br.edu.ifal.fiscalizaapp.data.db.entities.UserEntity
 
-class UserRepository(private val userAPI: UserAPI, private val userDao: UserDao) {
+class UserRepository(
+    private val userAPI: UserAPI,
+    private val userDao: UserDao) {
 
     suspend fun getUsers(): List<UserEntity> {
         return try {
@@ -17,6 +19,10 @@ class UserRepository(private val userAPI: UserAPI, private val userDao: UserDao)
     }
 
     suspend fun getUserById(userId: Int) = userAPI.getUserById(userId)
+
+    suspend fun getLoggedUser(): UserEntity? {
+        return userDao.getUser()
+    }
 
     suspend fun insert(user: UserEntity): Result<Unit> {
         return try {
@@ -36,4 +42,9 @@ class UserRepository(private val userAPI: UserAPI, private val userDao: UserDao)
             Result.failure(e)
         }
     }
+
+    suspend fun deleteAccount(userId: Int) {
+        userDao.deleteUser(userId.toLong())
+    }
+
 }

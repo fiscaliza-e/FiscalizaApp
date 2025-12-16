@@ -31,8 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
-import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.model.BottomNavBarItem
 import br.edu.ifal.fiscalizaapp.navigation.routes.AppNavHost
 import br.edu.ifal.fiscalizaapp.navigation.routes.faqRoute
@@ -127,11 +125,8 @@ class MainActivity : ComponentActivity() {
     ) {
         Scaffold(
             containerColor = Color.White,
-            topBar = {
-                    AppHeader(AppHeaderType.MAIN_SCREEN)
-            },
             bottomBar = {
-                if (shouldShowBars && userUiState is UiState.Success) {
+                if (shouldShowBars) {
                     BottomNavBar(
                         modifier = Modifier,
                         selectedItem = selectedItem,

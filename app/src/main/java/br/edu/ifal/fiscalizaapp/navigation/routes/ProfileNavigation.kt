@@ -11,20 +11,7 @@ const val profileRoute = "profileScreen"
 
 fun NavGraphBuilder.profileScreen(navController: NavController) {
     composable(profileRoute) {
-        val context = LocalContext.current
-        ProfileScreen(
-            onLogout = {
-                val sessionManager = SessionManager(context)
-                sessionManager.clearSession()
-
-                navController.navigate(loginRoute) {
-                    popUpTo(0) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
-            }
-        )
+        ProfileScreen(navController = navController)
     }
 }
 

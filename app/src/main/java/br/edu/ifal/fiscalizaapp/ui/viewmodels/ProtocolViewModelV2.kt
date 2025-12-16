@@ -16,6 +16,7 @@ class ProtocolViewModelV2(
     private val context: Context
 ) : ViewModel() {
 
+    private val sessionManager = SessionManager(context)
     private val _uiState = MutableStateFlow<UiState<List<Protocol>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Protocol>>> = _uiState
 
@@ -23,7 +24,6 @@ class ProtocolViewModelV2(
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
-                val sessionManager = SessionManager(context)
                 val userId = sessionManager.getUserApiId()
                 print(userId)
                 if (userId != -1) {
@@ -36,5 +36,9 @@ class ProtocolViewModelV2(
                 _uiState.value = UiState.Error(e.message ?: "Unknown error")
             }
         }
+    }
+
+    fun logout() {
+        sessionManager.clearSession()
     }
 }

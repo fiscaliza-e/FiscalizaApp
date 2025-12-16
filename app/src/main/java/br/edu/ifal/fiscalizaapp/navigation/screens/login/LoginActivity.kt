@@ -2,8 +2,11 @@ package br.edu.ifal.fiscalizaapp.navigation.screens.login
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.Image // <--- IMPORTANTE
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState // Recomendado para telas de login
+import androidx.compose.foundation.verticalScroll     // Recomendado
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -11,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource // <--- IMPORTANTE
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import br.edu.ifal.fiscalizaapp.R // <--- CERTIFIQUE-SE DE QUE ESSE IMPORT ESTÁ AQUI
 import br.edu.ifal.fiscalizaapp.composables.input.Input
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
@@ -46,18 +51,40 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp),
+                .imePadding()
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_logo_app),
+                contentDescription = "Logo Fiscaliza-e",
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(bottom = 8.dp)
+            )
+
+            Text(
+                text = "Fiscaliza-e",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Medium,
+                color = PrimaryGreen
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
             Text(
                 text = "Entre na sua conta",
-                fontSize = 28.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = PrimaryGreen
             )
-            Spacer(modifier = Modifier.height(64.dp))
-            Column () {
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Column {
                 Input(
                     value = email,
                     onValueChange = { email = it },
@@ -122,7 +149,7 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
 
             Row {
                 Text(
-                    text = "Não possui uma conta?",
+                    text = "Não possui uma conta? ",
                     fontSize = 14.sp,
                 )
                 Text(
@@ -130,7 +157,7 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                     fontSize = 14.sp,
                     color = PrimaryGreen,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { 
+                    modifier = Modifier.clickable {
                         navController.navigate(registerRoute)
                     }
                 )

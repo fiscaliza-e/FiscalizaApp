@@ -54,6 +54,7 @@ import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 @Composable
 fun NewProtocolScreen(
     navController: NavController,
+    categoryIdFromRoute: Int = -1,
     modifier: Modifier = Modifier,
     viewModel: NewProtocolViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
@@ -72,9 +73,16 @@ fun NewProtocolScreen(
 
     val categoryUiState by viewModel.categoryUiState.collectAsState()
     val insertUiState by viewModel.insertUiState.collectAsState()
+    val preSelectedCategory by viewModel.preSelectedCategory.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchCategories()
+        viewModel.fetchCategories(preSelectedId = categoryIdFromRoute)
+    }
+
+    LaunchedEffect(preSelectedCategory) {
+        if (preSelectedCategory != null) {
+            selectedCategory = preSelectedCategory
+        }
     }
 
     LaunchedEffect(insertUiState) {

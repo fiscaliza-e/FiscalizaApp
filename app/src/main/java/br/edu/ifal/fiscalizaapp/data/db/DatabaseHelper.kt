@@ -6,27 +6,33 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import br.edu.ifal.fiscalizaapp.data.db.dao.CategoryDao
+import br.edu.ifal.fiscalizaapp.data.db.dao.FaqDao
 import br.edu.ifal.fiscalizaapp.data.db.dao.ProtocolDao
 import br.edu.ifal.fiscalizaapp.data.db.dao.UserDao
 import br.edu.ifal.fiscalizaapp.data.db.data.initialUser
 import br.edu.ifal.fiscalizaapp.data.db.entities.CategoryEntity
 import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
 import br.edu.ifal.fiscalizaapp.data.db.entities.UserEntity
+import br.edu.ifal.fiscalizaapp.data.db.entities.FaqEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    version = 6,
-    entities = [CategoryEntity::class, UserEntity::class, ProtocolEntity::class],
+    version = 7,
+    entities = [
+        CategoryEntity::class,
+        UserEntity::class,
+        ProtocolEntity::class,
+        FaqEntity::class
+    ],
     exportSchema = false
 )
 abstract class DatabaseHelper : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun userDao(): UserDao
-
+    abstract fun faqDao(): FaqDao
     abstract fun protocolDao(): ProtocolDao
-
 
     companion object {
         @Volatile
