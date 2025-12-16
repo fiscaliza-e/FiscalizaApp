@@ -21,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -34,19 +37,28 @@ import br.edu.ifal.fiscalizaapp.R
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.card.CategoryCard
+import br.edu.ifal.fiscalizaapp.composables.dialog.LogoutDialog
+import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
+import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.navigation.routes.categoryListRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
 import br.edu.ifal.fiscalizaapp.navigation.routes.newProtocolRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 import br.edu.ifal.fiscalizaapp.ui.state.UiState
 
-data class Categories(@DrawableRes val icon: Int, val text: String)
+data class Categories(
+    val id: Int,
+    @DrawableRes val icon: Int,
+    val text: String
+)
+
 private val categories = listOf(
-    Categories(icon = R.drawable.ic_buraco_na_via, text = "Buraco na Via"),
-    Categories(icon = R.drawable.ic_poste, text = "Poste sem Luz"),
-    Categories(icon = R.drawable.ic_lixo_acumulado, text = "Lixo Acumulado"),
-    Categories(icon = R.drawable.ic_semaforo_apagado, text = "Semáforo Apagado"),
+    Categories(id = 2, icon = R.drawable.ic_buraco_na_via, text = "Buraco na Via"),
+    Categories(id = 1, icon = R.drawable.ic_poste, text = "Poste sem Luz"),
+    Categories(id = 3, icon = R.drawable.ic_lixo_acumulado, text = "Lixo Acumulado"),
+    Categories(id = 7, icon = R.drawable.ic_semaforo_apagado, text = "Semáforo Apagado"),
 )
 
 @Composable
@@ -57,8 +69,32 @@ fun HomeScreen(
 ) {
     val userUiState by viewModel.uiState.collectAsState()
 
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutDialog) {
+        LogoutDialog(
+            onDismiss = { showLogoutDialog = false },
+            onConfirm = {
+                showLogoutDialog = false
+                viewModel.logout()
+                navController.navigate(loginRoute) {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        )
+    }
+
     Scaffold(
-        containerColor = Color.White
+        containerColor = Color.White,
+        topBar = {
+            AppHeader(
+                type = AppHeaderType.MAIN_SCREEN,
+                onActionClick = {
+                    showLogoutDialog = true
+                }
+            )
+        }
     ) { innerPadding ->
         LazyVerticalGrid (
             columns = GridCells.Fixed(2),
@@ -124,7 +160,9 @@ fun HomeScreen(
                     modifier = Modifier.defaultMinSize(100.dp),
                     icon = painterResource(id = category.icon),
                     text = category.text,
-                    onClick = {}
+                    onClick = {
+                        navController.navigate("$newProtocolRoute?categoryId=${category.id}")
+                    }
                 )
             }
 

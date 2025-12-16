@@ -32,7 +32,9 @@ import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ProtocolList(protocols: List<ProtocolEntity>, modifier: Modifier = Modifier) {
+fun ProtocolList(protocols: List<ProtocolEntity>, modifier: Modifier = Modifier,
+    onNewProtocolClick: () -> Unit
+) {
 
     if (protocols.isEmpty()) {
         Box(
@@ -70,7 +72,9 @@ fun ProtocolList(protocols: List<ProtocolEntity>, modifier: Modifier = Modifier)
 
                 Button(
                     text = "Fazer Primeira Reclamação",
-                    onClick = { println("Oi") },
+                    onClick = {
+                        onNewProtocolClick()
+                    },
                     variant = ButtonVariant.Primary
                 )
             }

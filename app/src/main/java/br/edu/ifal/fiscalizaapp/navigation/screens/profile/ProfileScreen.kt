@@ -14,7 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,34 +25,72 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.card.CardBase
-import br.edu.ifal.fiscalizaapp.data.db.DatabaseHelper
-import br.edu.ifal.fiscalizaapp.data.db.entities.UserEntity
+import br.edu.ifal.fiscalizaapp.composables.dialog.DeleteAccountDialog
+import br.edu.ifal.fiscalizaapp.composables.dialog.LogoutDialog
+import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
+import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
+import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
+import br.edu.ifal.fiscalizaapp.ui.state.UiState
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 
 @Composable
 fun ProfileScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
-    onLogout: () -> Unit = {},
-    onDeleteAccount: () -> Unit = {}
+    viewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
-    val context = LocalContext.current
-    val dao = DatabaseHelper.getInstance(context).userDao()
-    var user by remember { mutableStateOf<UserEntity?>(null) }
+    val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            // TODO: Get the user logged in
-            user = dao.getUser()
-        }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutDialog) {
+        LogoutDialog(
+            onDismiss = { showLogoutDialog = false },
+            onConfirm = {
+                showLogoutDialog = false
+                viewModel.logout()
+                navController.navigate(loginRoute) {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        )
+    }
+
+    if (showDeleteDialog) {
+        DeleteAccountDialog(
+            onDismiss = { showDeleteDialog = false },
+            onConfirm = {
+                showDeleteDialog = false
+
+                viewModel.deleteAccount()
+
+                navController.navigate(loginRoute) {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        )
     }
 
     Scaffold(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            AppHeader(
+                type = AppHeaderType.MAIN_SCREEN,
+                onActionClick = {
+                    showLogoutDialog = true
+                }
+            )
+        }
     ) { innerPadding ->
         Surface(
             modifier = Modifier
@@ -60,6 +98,8 @@ fun ProfileScreen(
                 .fillMaxSize(),
             color = Color.White
         ) {
+            val user = (uiState as? UiState.Success)?.data
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -96,7 +136,7 @@ fun ProfileScreen(
                             )
                         }
                     }
-                    
+
                     Surface(
                         modifier = Modifier
                             .offset(x = 40.dp, y = 40.dp)
@@ -156,11 +196,12 @@ fun ProfileScreen(
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
-                            
+
                             Text(
                                 text = "Editar",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = PrimaryGreen.copy(alpha = 0.5f)
+                                color = PrimaryGreen.copy(alpha = 0.5f),
+                                modifier = Modifier.clickable { /* TODO: Navegar para edição */ }
                             )
                         }
 
@@ -198,7 +239,7 @@ fun ProfileScreen(
 
                 Button(
                     text = "Sair do aplicativo",
-                    onClick = onLogout,
+                    onClick = { showLogoutDialog = true },
                     variant = ButtonVariant.Danger,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -211,11 +252,10 @@ fun ProfileScreen(
                     color = Color.Red,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .clickable { onDeleteAccount() }
+                        .clickable { showDeleteDialog = true }
                         .padding(bottom = 32.dp)
                 )
             }
         }
     }
 }
-

@@ -19,7 +19,13 @@ import br.edu.ifal.fiscalizaapp.data.db.DatabaseHelper
 import br.edu.ifal.fiscalizaapp.data.db.dao.ProtocolDao
 import br.edu.ifal.fiscalizaapp.data.db.dao.UserDao
 
+
 class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+
+    private val database by lazy {
+        DatabaseHelper.getInstance(context)
+    }
+
     private val cepAPI: CepAPI by lazy {
         CepRetrofitHelper.getCepAPI()
     }
@@ -51,17 +57,21 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
     private val protocolRepository: ProtocolRepository by lazy {
         ProtocolRepository(protocolAPI, protocolDao)
     }
+
     private val faqRepository: FaqRepository by lazy {
-        FaqRepository(faqAPI)
+        FaqRepository(faqAPI, database.faqDao())
     }
+
     private val cepRepository: CepRepository by lazy {
         CepRepository(cepAPI)
     }
+
     private val userRepository: UserRepository by lazy {
-        UserRepository(userAPI, userDao)
+        UserRepository(userAPI, database.userDao())
     }
+
     private val categoryRepository: CategoryRepository by lazy {
-        CategoryRepository(categoryAPI)
+        CategoryRepository(categoryAPI, database.categoryDao())
     }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -71,22 +81,23 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                 ProtocolViewModel(protocolRepository, context) as T
             }
             modelClass.isAssignableFrom(FaqViewModel::class.java) -> {
-                FaqViewModel(faqRepository) as T
+                FaqViewModel(faqRepository, context) as T
             }
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
-                HomeViewModel(userRepository) as T
+                HomeViewModel(userRepository, context) as T
             }
             modelClass.isAssignableFrom(NewProtocolViewModel::class.java) -> {
                 NewProtocolViewModel(categoryRepository, protocolRepository) as T
             }
-
             modelClass.isAssignableFrom(CepViewModel::class.java) -> {
                 CepViewModel(cepRepository) as T
             }
             modelClass.isAssignableFrom(UserViewModel::class.java) -> {
                 UserViewModel(userRepository) as T
             }
-
+            modelClass.isAssignableFrom(CategoryViewModel::class.java) -> {
+                CategoryViewModel(categoryRepository) as T
+            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }

@@ -22,7 +22,7 @@ sealed class RefreshState {
 
 class ProtocolViewModel(
     private val repository: ProtocolRepository,
-    private val context: Context
+    context: Context
 ) : ViewModel() {
 
     private val sessionManager = SessionManager(context)
@@ -62,5 +62,9 @@ class ProtocolViewModel(
                 _refreshState.value = RefreshState.Idle
             }
         }
+    }
+
+    fun logout() {
+        sessionManager.clearSession()
     }
 }
