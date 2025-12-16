@@ -1,7 +1,7 @@
 package br.edu.ifal.fiscalizaapp.data.repository
 
-import br.edu.ifal.fiscalizaapp.model.ProtocolEntity
-import br.edu.ifal.fiscalizaapp.db.ProtocolDao
+import br.edu.ifal.fiscalizaapp.db.entities.ProtocolEntity
+import br.edu.ifal.fiscalizaapp.db.dao.ProtocolDao
 
 open class LocalProtocolRepository (private val protocolDao: ProtocolDao) {
 

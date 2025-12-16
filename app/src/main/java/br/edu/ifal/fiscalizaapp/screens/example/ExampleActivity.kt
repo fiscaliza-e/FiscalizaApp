@@ -28,12 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import br.edu.ifal.fiscalizaapp.composables.accordion.AccordionItem
 import br.edu.ifal.fiscalizaapp.composables.accordion.AccordionList
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.imagepicker.ImagePicker
 import br.edu.ifal.fiscalizaapp.composables.textarea.TextArea
+import br.edu.ifal.fiscalizaapp.model.AccordionItem
 import br.edu.ifal.fiscalizaapp.screens.example.composables.exampleComposable.ExampleCard
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 

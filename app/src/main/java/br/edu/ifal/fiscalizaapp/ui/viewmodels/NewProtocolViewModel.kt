@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.edu.ifal.fiscalizaapp.data.repository.CategoryRepository
 import br.edu.ifal.fiscalizaapp.data.repository.LocalProtocolRepository
-import br.edu.ifal.fiscalizaapp.model.ProtocolEntity
+import br.edu.ifal.fiscalizaapp.db.entities.ProtocolEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

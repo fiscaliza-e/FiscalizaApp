@@ -34,8 +34,8 @@ import br.edu.ifal.fiscalizaapp.R
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.card.CategoryCard
-import br.edu.ifal.fiscalizaapp.navigation.categoryListRoute
-import br.edu.ifal.fiscalizaapp.navigation.newProtocolRoute
+import br.edu.ifal.fiscalizaapp.routes.categoryListRoute
+import br.edu.ifal.fiscalizaapp.routes.newProtocolRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory

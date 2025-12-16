@@ -5,9 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import br.edu.ifal.fiscalizaapp.model.CategoryEntity
-import br.edu.ifal.fiscalizaapp.model.ProtocolEntity
-import br.edu.ifal.fiscalizaapp.model.UserEntity
+import br.edu.ifal.fiscalizaapp.db.dao.CategoryDao
+import br.edu.ifal.fiscalizaapp.db.dao.ProtocolDao
+import br.edu.ifal.fiscalizaapp.db.dao.UserDao
+import br.edu.ifal.fiscalizaapp.db.data.initialUser
+import br.edu.ifal.fiscalizaapp.db.entities.CategoryEntity
+import br.edu.ifal.fiscalizaapp.db.entities.ProtocolEntity
+import br.edu.ifal.fiscalizaapp.db.entities.UserEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

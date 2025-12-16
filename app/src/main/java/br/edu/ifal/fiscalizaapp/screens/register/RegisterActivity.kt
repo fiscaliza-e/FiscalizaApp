@@ -27,7 +27,8 @@ import br.edu.ifal.fiscalizaapp.composables.input.InputType
 import br.edu.ifal.fiscalizaapp.composables.input.InputVariant
 import br.edu.ifal.fiscalizaapp.composables.input.cepMask
 import br.edu.ifal.fiscalizaapp.composables.input.cpfMask
-import br.edu.ifal.fiscalizaapp.navigation.loginRoute
+import br.edu.ifal.fiscalizaapp.db.entities.UserEntity
+import br.edu.ifal.fiscalizaapp.routes.loginRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CepUiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CepViewModel
@@ -413,7 +414,7 @@ private fun handleSubmitRegistration(
                     val userDao = db.userDao()
 
                     val apiUserEntities = state.users.map { apiUser ->
-                        br.edu.ifal.fiscalizaapp.model.UserEntity(
+                        UserEntity(
                             id = 0,
                             apiId = apiUser.id,
                             name = apiUser.name,
@@ -439,7 +440,7 @@ private fun handleSubmitRegistration(
                     if (existingByEmail != null || existingByCpf != null) {
                         finalErrorMessage = "Este Email ou CPF já está cadastrado."
                     } else {
-                        val newUser = br.edu.ifal.fiscalizaapp.model.UserEntity(
+                        val newUser = UserEntity(
                             id = 0,
                             apiId = null,
                             name = formState.fullName.trim(),

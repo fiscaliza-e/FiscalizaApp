@@ -2,7 +2,7 @@ package br.edu.ifal.fiscalizaapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.edu.ifal.fiscalizaapp.data.model.Protocol
+import br.edu.ifal.fiscalizaapp.model.Protocol
 import br.edu.ifal.fiscalizaapp.data.repository.ProtocolRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -29,8 +29,7 @@ import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.card.CardBase
 import br.edu.ifal.fiscalizaapp.db.DatabaseHelper
-import br.edu.ifal.fiscalizaapp.db.initialUser
-import br.edu.ifal.fiscalizaapp.model.UserEntity
+import br.edu.ifal.fiscalizaapp.db.entities.UserEntity
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

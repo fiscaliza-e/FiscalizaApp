@@ -22,8 +22,8 @@ import br.edu.ifal.fiscalizaapp.composables.input.InputType
 import br.edu.ifal.fiscalizaapp.composables.input.InputStyle
 import br.edu.ifal.fiscalizaapp.composables.input.InputVariant
 import br.edu.ifal.fiscalizaapp.db.DatabaseHelper
-import br.edu.ifal.fiscalizaapp.navigation.homeRoute
-import br.edu.ifal.fiscalizaapp.navigation.registerRoute
+import br.edu.ifal.fiscalizaapp.routes.homeRoute
+import br.edu.ifal.fiscalizaapp.routes.registerRoute
 import br.edu.ifal.fiscalizaapp.session.SessionManager
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import kotlinx.coroutines.CoroutineScope

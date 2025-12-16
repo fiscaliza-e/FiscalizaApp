@@ -19,8 +19,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import br.edu.ifal.fiscalizaapp.composables.protocolList.ProtocolList
-import br.edu.ifal.fiscalizaapp.data.model.Protocol
+import br.edu.ifal.fiscalizaapp.composables.protocollist.ProtocolList
+import br.edu.ifal.fiscalizaapp.model.Protocol
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelV2
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.UiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelFactoryV2

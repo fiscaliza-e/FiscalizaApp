@@ -3,7 +3,7 @@ package br.edu.ifal.fiscalizaapp.ui.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.edu.ifal.fiscalizaapp.data.model.Protocol
+import br.edu.ifal.fiscalizaapp.model.Protocol
 import br.edu.ifal.fiscalizaapp.data.repository.ProtocolRepository
 import br.edu.ifal.fiscalizaapp.session.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
