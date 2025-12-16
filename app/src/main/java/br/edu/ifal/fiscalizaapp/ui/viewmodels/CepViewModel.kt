@@ -2,7 +2,7 @@ package br.edu.ifal.fiscalizaapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.edu.ifal.fiscalizaapp.data.remote.dto.CepResponse
+import br.edu.ifal.fiscalizaapp.data.api.dto.CepResponse
 import br.edu.ifal.fiscalizaapp.data.repository.CepRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

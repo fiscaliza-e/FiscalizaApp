@@ -1,10 +1,10 @@
 package br.edu.ifal.fiscalizaapp.data.repository
 
-import br.edu.ifal.fiscalizaapp.data.remote.ModelService
+import br.edu.ifal.fiscalizaapp.data.api.protocol.ProtocolAPI
 
-class ProtocolRepository(private val modelService: ModelService) {
+class ProtocolRepository(private val protocolAPI: ProtocolAPI) {
 
-    suspend fun getProtocols() = modelService.getProtocols()
+    suspend fun getProtocols() = protocolAPI.getProtocols()
 
-    suspend fun getProtocolsByUserId(userId: Int) = modelService.getProtocolsByUserId(userId)
+    suspend fun getProtocolsByUserId(userId: Int) = protocolAPI.getProtocolsByUserId(userId)
 }

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.edu.ifal.fiscalizaapp.data.repository.CategoryRepository
 import br.edu.ifal.fiscalizaapp.data.repository.LocalProtocolRepository
-import br.edu.ifal.fiscalizaapp.db.entities.ProtocolEntity
+import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -25,12 +25,6 @@ sealed class CategoryUiState {
     data class Error(val message: String) : CategoryUiState()
 }
 
-sealed class InsertUiState {
-    object Idle : InsertUiState()
-    object Loading : InsertUiState()
-    object Success : InsertUiState()
-    data class Error(val message: String) : InsertUiState()
-}
 
 open class NewProtocolViewModel(
     private val categoryRepository: CategoryRepository,

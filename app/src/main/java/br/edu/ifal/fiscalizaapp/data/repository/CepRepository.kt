@@ -1,7 +1,7 @@
 package br.edu.ifal.fiscalizaapp.data.repository
 
-import br.edu.ifal.fiscalizaapp.data.remote.CepService
+import br.edu.ifal.fiscalizaapp.data.api.cep.CepAPI
 
-class CepRepository(private val cepService: CepService) {
-    suspend fun getAddressByCep(cep: String) = cepService.getAddressByCep(cep)
+class CepRepository(private val cepAPI: CepAPI) {
+    suspend fun getAddressByCep(cep: String) = cepAPI.getAddressByCep(cep)
 }

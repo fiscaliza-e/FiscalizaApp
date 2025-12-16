@@ -34,19 +34,19 @@ import androidx.navigation.compose.rememberNavController
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.model.BottomNavBarItem
-import br.edu.ifal.fiscalizaapp.routes.AppNavHost
-import br.edu.ifal.fiscalizaapp.routes.faqRoute
-import br.edu.ifal.fiscalizaapp.routes.homeRoute
-import br.edu.ifal.fiscalizaapp.routes.loginRoute
-import br.edu.ifal.fiscalizaapp.routes.protocolRoute
-import br.edu.ifal.fiscalizaapp.routes.profileRoute
-import br.edu.ifal.fiscalizaapp.routes.registerRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.AppNavHost
+import br.edu.ifal.fiscalizaapp.navigation.routes.faqRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.homeRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.profileRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.protocolRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.registerRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 import br.edu.ifal.fiscalizaapp.ui.theme.DarkGray
 import br.edu.ifal.fiscalizaapp.ui.theme.LightGray
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.UiState
+import br.edu.ifal.fiscalizaapp.ui.state.UiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
