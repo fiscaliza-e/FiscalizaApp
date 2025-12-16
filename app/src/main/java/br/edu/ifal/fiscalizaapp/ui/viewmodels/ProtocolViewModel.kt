@@ -13,17 +13,18 @@ import kotlinx.coroutines.launch
 
 class ProtocolViewModel(
     private val repository: ProtocolRepository,
-    private val context: Context
+    context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<List<Protocol>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Protocol>>> = _uiState
 
+    private val sessionManager = SessionManager(context)
+
     fun fetchUserProtocols() {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
-                val sessionManager = SessionManager(context)
                 val userId = sessionManager.getUserApiId()
                 if (userId != -1) {
                     val protocols = repository.getProtocolsByUserId(userId)
@@ -36,5 +37,9 @@ class ProtocolViewModel(
                 _uiState.value = UiState.Error(e.message ?: "Unknown error")
             }
         }
+    }
+
+    fun logout() {
+        sessionManager.clearSession()
     }
 }
