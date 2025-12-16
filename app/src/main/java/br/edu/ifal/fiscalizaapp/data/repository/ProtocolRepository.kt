@@ -16,9 +16,13 @@ class ProtocolRepository(private val protocolAPI: ProtocolAPI, private val proto
         try {
             val apiProtocols = protocolAPI.getProtocolsByUserId(userId)
             val protocolEntities = apiProtocols.map { it.toEntity() }
+
+            protocolDao.deleteProtocolsByUserId(userId)
+
             protocolDao.insertAll(protocolEntities)
+
         } catch (e: Exception) {
-            throw e
+            android.util.Log.e("ProtocolRepository", "Erro ao sincronizar protocolos: ${e.message}")
         }
     }
 

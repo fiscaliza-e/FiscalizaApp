@@ -42,6 +42,7 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
 
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
+        var isLoadingLogin by remember { mutableStateOf(false) }
         var errorMessage by remember { mutableStateOf<String?>(null) }
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
@@ -200,11 +201,17 @@ private fun handleSubmitlogin(
 
             withContext(Dispatchers.Main) {
                 if (user != null && user.password == password) {
-                    user.apiId?.let { id ->
-                        sessionManager.saveUserApiId(id)
-                        Log.d("LOGIN_SUCCESS", "User API ID saved: $id")
+
+                    val idToSave = user.apiId ?: user.id?.toInt()
+
+                    if (idToSave != null) {
+                        sessionManager.saveUserApiId(idToSave)
+                        Log.d("LOGIN_SUCCESS", "User ID saved: $idToSave (API ou Local)")
+                        onSuccess()
+                    } else {
+                        setErrorMessage("Erro de sessão: ID do usuário indisponível.")
                     }
-                    onSuccess()
+
                 } else {
                     setErrorMessage("E-mail ou senha inválidos.")
                 }

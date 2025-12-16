@@ -26,9 +26,10 @@ import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.composables.protocollist.ProtocolList
 import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.newProtocolRoute
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.RefreshState
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModelFactory
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -37,7 +38,7 @@ fun ProtocolScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val viewModel: ProtocolViewModel = viewModel(factory = ProtocolViewModelFactory(context))
+    val viewModel: ProtocolViewModel = viewModel(factory = ViewModelFactory(context))
 
     val protocols by viewModel.protocols.collectAsStateWithLifecycle(initialValue = emptyList())
     val refreshState by viewModel.refreshState.collectAsStateWithLifecycle()
@@ -83,7 +84,10 @@ fun ProtocolScreen(
         ) {
             ProtocolList(
                 protocols = protocols,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                onNewProtocolClick = {
+                    navController.navigate(newProtocolRoute)
+                }
             )
 
             if (refreshState is RefreshState.Loading) {
