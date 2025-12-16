@@ -2,11 +2,11 @@ package br.edu.ifal.fiscalizaapp.navigation.screens.login
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.Image // <--- IMPORTANTE
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState // Recomendado para telas de login
-import androidx.compose.foundation.verticalScroll     // Recomendado
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -14,12 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource // <--- IMPORTANTE
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import br.edu.ifal.fiscalizaapp.R // <--- CERTIFIQUE-SE DE QUE ESSE IMPORT ESTÁ AQUI
+import br.edu.ifal.fiscalizaapp.R
 import br.edu.ifal.fiscalizaapp.composables.input.Input
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
@@ -42,7 +42,6 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
 
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
-        var isLoadingLogin by remember { mutableStateOf(false) }
         var errorMessage by remember { mutableStateOf<String?>(null) }
         val scope = rememberCoroutineScope()
         val context = LocalContext.current

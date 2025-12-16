@@ -20,15 +20,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import br.edu.ifal.fiscalizaapp.model.BottomNavBarItem
@@ -39,13 +37,11 @@ import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
 import br.edu.ifal.fiscalizaapp.navigation.routes.profileRoute
 import br.edu.ifal.fiscalizaapp.navigation.routes.protocolRoute
 import br.edu.ifal.fiscalizaapp.navigation.routes.registerRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.welcomeRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.FiscalizaTheme
 import br.edu.ifal.fiscalizaapp.ui.theme.DarkGray
 import br.edu.ifal.fiscalizaapp.ui.theme.LightGray
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
-import br.edu.ifal.fiscalizaapp.ui.state.UiState
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
@@ -83,29 +79,16 @@ class MainActivity : ComponentActivity() {
                         mutableStateOf(bottomNavBarItems.first())
                     }
 
-                    val homeViewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
-                    val userUiState by homeViewModel.uiState.collectAsState()
-
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute = navBackStackEntry?.destination?.route
 
-                    val standaloneRoutes = listOf(loginRoute, registerRoute)
+                    val standaloneRoutes = listOf(loginRoute, registerRoute, welcomeRoute)
                     val shouldShowBars = currentRoute != null && currentRoute !in standaloneRoutes
 
                     FiscalizaApp(
                         shouldShowBars = shouldShowBars,
-                        selectedItem = selectedItem,
-                        userUiState = userUiState,
-                        onBottomNavBarItemChange = { item ->
-                            selectedItem = item
-                            navController.navigate(item.route) {
-                                launchSingleTop = true
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                restoreState = true
-                            }
-                        }
+                        currentRoute = currentRoute,
+                        navController = navController
                     ) {
                         AppNavHost(navController)
                     }
@@ -117,21 +100,16 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun FiscalizaApp(
         modifier: Modifier = Modifier,
-        shouldShowBars: Boolean, 
-        selectedItem: BottomNavBarItem,
-        userUiState: UiState<*>, 
-        onBottomNavBarItemChange: (BottomNavBarItem) -> Unit,
+        shouldShowBars: Boolean,
+        currentRoute: String?,
+        navController: NavController,
         content: @Composable () -> Unit
     ) {
         Scaffold(
             containerColor = Color.White,
             bottomBar = {
                 if (shouldShowBars) {
-                    BottomNavBar(
-                        modifier = Modifier,
-                        selectedItem = selectedItem,
-                        onItemChanged = onBottomNavBarItemChange
-                    )
+                    BottomNavBar(navController = navController)
                 }
             }
         ) { innerPadding ->
@@ -146,18 +124,29 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun BottomNavBar(
         modifier: Modifier = Modifier,
-        selectedItem: BottomNavBarItem,
-        onItemChanged: (BottomNavBarItem) -> Unit,
+        navController: NavController,
     ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
         NavigationBar(
             containerColor = Color.White
         ) {
             bottomNavBarItems.forEach { item ->
+                val isSelected = currentRoute == item.route
                 NavigationBarItem(
                     enabled = true,
-                    selected = selectedItem.label == item.label,
+                    selected = isSelected,
                     onClick = {
-                        onItemChanged(item)
+                        if (currentRoute != item.route) {
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     },
                     icon = {
                         Icon(
