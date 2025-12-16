@@ -29,10 +29,15 @@ import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.searchfilter.SearchFilter
 import br.edu.ifal.fiscalizaapp.model.Protocol
+import br.edu.ifal.fiscalizaapp.navigation.routes.newProtocolRoute
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ProtocolList(protocols: List<Protocol>, modifier: Modifier = Modifier) {
+fun ProtocolList(
+    protocols: List<Protocol>,
+    modifier: Modifier = Modifier,
+    onNewProtocolClick: () -> Unit
+) {
 
     if (protocols.isEmpty()) {
         Box(
@@ -70,7 +75,9 @@ fun ProtocolList(protocols: List<Protocol>, modifier: Modifier = Modifier) {
 
                 Button(
                     text = "Fazer Primeira Reclamação",
-                    onClick = { println("Oi") },
+                    onClick = {
+                        onNewProtocolClick()
+                    },
                     variant = ButtonVariant.Primary
                 )
             }

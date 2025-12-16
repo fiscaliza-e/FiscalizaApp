@@ -5,4 +5,3 @@ data class NetworkCategory (
     val title: String,
     val description: String
 )
-
