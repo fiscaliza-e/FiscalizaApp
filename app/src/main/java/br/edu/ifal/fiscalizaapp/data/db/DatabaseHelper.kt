@@ -12,35 +12,36 @@ import br.edu.ifal.fiscalizaapp.data.db.dao.ProtocolDao
 import br.edu.ifal.fiscalizaapp.data.db.dao.UserDao
 import br.edu.ifal.fiscalizaapp.data.db.data.initialUser
 import br.edu.ifal.fiscalizaapp.data.db.entities.CategoryEntity
+import br.edu.ifal.fiscalizaapp.data.db.entities.FaqEntity
 import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
 import br.edu.ifal.fiscalizaapp.data.db.entities.UserEntity
-import br.edu.ifal.fiscalizaapp.data.db.entities.FaqEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    version = 7,
-    entities = [
-        CategoryEntity::class,
-        UserEntity::class,
-        ProtocolEntity::class,
-        FaqEntity::class
-    ],
+    version = 8,
+    entities = [CategoryEntity::class, UserEntity::class, ProtocolEntity::class, FaqEntity::class],
     exportSchema = false
 )
 abstract class DatabaseHelper : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun userDao(): UserDao
-    abstract fun faqDao(): FaqDao
     abstract fun protocolDao(): ProtocolDao
+    abstract fun faqDao(): FaqDao
+
 
     companion object {
         @Volatile
         private var INSTANCE: DatabaseHelper? = null
 
         val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {}
+        }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
             override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `faq` (`id` INTEGER NOT NULL, `question` TEXT NOT NULL, `answer` TEXT NOT NULL, PRIMARY KEY(`id`))")
             }
         }
 
@@ -51,7 +52,7 @@ abstract class DatabaseHelper : RoomDatabase() {
                     DatabaseHelper::class.java,
                     "fiscalizae.db"
                 )
-                    .addMigrations(MIGRATION_6_7)
+                    .addMigrations(MIGRATION_6_7, MIGRATION_7_8)
                     .addCallback(DatabaseCallback(context))
                     .build()
                 INSTANCE = instance
