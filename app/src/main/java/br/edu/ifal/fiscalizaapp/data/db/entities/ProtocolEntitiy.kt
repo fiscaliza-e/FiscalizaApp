@@ -7,15 +7,16 @@ import androidx.room.PrimaryKey
 data class ProtocolEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val category: String,
+    val protocolNumber: String?,
+    val title: String,
     val description: String,
-    val useMyLocation: Boolean,
+    val status: String,
+    val date: String,
+    val userId: Int,
     val cep: String,
     val rua: String,
     val bairro: String,
     val numero: String,
     val pontoReferencia: String,
-    val status: String,
-    val date: String,
-    val userId: Int
+    val useMyLocation: Boolean
 )
