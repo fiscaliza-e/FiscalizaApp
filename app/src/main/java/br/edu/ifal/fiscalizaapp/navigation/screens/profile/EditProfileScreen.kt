@@ -53,7 +53,6 @@ fun EditProfileScreen(
     var uf by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Dispara busca de endereço quando o CEP muda
     LaunchedEffect(cep) {
         if (cep.length == 8) {
             cepViewModel.fetchAddressByCep(cep)
@@ -62,7 +61,6 @@ fun EditProfileScreen(
         }
     }
 
-    // Atualiza campos de endereço quando a API de CEP retorna
     LaunchedEffect(cepUiState) {
         when (val state = cepUiState) {
             is CepUiState.Success -> {
@@ -74,8 +72,7 @@ fun EditProfileScreen(
             else -> Unit
         }
     }
-
-    // Carrega os dados do usuário quando a tela é exibida
+    
     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is UiState.Success -> {
@@ -84,8 +81,6 @@ fun EditProfileScreen(
 
                 val addr = user.address
                 if (addr.isNotBlank()) {
-                    // Tenta quebrar o endereço no formato:
-                    // Rua, Número, Bairro - Cidade/UF
                     val hyphenParts = addr.split(" - ", limit = 2)
                     val beforeHyphen = hyphenParts[0]
                     val afterHyphen = hyphenParts.getOrNull(1)
@@ -101,7 +96,6 @@ fun EditProfileScreen(
                             city = cityStateParts[0]
                             uf = cityStateParts[1]
                         } else {
-                            // Caso só tenha bairro ou cidade depois do hífen
                             if (neighborhood.isBlank()) {
                                 neighborhood = afterHyphen.trim()
                             } else {
@@ -114,8 +108,7 @@ fun EditProfileScreen(
             else -> {}
         }
     }
-
-    // Trata o resultado da atualização
+    
     LaunchedEffect(updateState) {
         when (val state = updateState) {
             is UpdateProfileState.Success -> {
@@ -179,8 +172,7 @@ fun EditProfileScreen(
                             style = InputStyle(variant = InputVariant.Primary, heightDp = 52),
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
-
-                        // CEP
+                       
                         Input(
                             value = cep,
                             onValueChange = { cep = it },
@@ -214,8 +206,7 @@ fun EditProfileScreen(
                                 Spacer(modifier = Modifier.height(16.dp))
                             }
                         }
-
-                        // Rua
+                        
                         Input(
                             value = street,
                             onValueChange = { street = it },
@@ -226,7 +217,6 @@ fun EditProfileScreen(
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
 
-                        // Bairro e Número
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -253,8 +243,7 @@ fun EditProfileScreen(
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
-
-                        // Cidade e UF
+                        
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
