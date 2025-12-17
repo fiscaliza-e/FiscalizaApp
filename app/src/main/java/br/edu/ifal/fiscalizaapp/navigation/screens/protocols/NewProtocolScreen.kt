@@ -1,6 +1,7 @@
 package br.edu.ifal.fiscalizaapp.navigation.screens.protocols
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,9 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -36,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.dropdown.Dropdown
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
@@ -47,6 +47,8 @@ import br.edu.ifal.fiscalizaapp.composables.input.cepMask
 import br.edu.ifal.fiscalizaapp.composables.textarea.TextArea
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CategoryUiModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CategoryUiState
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.CepUiState
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.CepViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.InsertUiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.NewProtocolViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
@@ -56,7 +58,8 @@ fun NewProtocolScreen(
     navController: NavController,
     categoryIdFromRoute: Int = -1,
     modifier: Modifier = Modifier,
-    viewModel: NewProtocolViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
+    viewModel: NewProtocolViewModel = viewModel(factory = ViewModelFactory(LocalContext.current)),
+    cepViewModel: CepViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
     val context = LocalContext.current
 
@@ -74,6 +77,7 @@ fun NewProtocolScreen(
     val categoryUiState by viewModel.categoryUiState.collectAsState()
     val insertUiState by viewModel.insertUiState.collectAsState()
     val preSelectedCategory by viewModel.preSelectedCategory.collectAsState()
+    val cepUiState by cepViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchCategories(preSelectedId = categoryIdFromRoute)
@@ -82,6 +86,31 @@ fun NewProtocolScreen(
     LaunchedEffect(preSelectedCategory) {
         if (preSelectedCategory != null) {
             selectedCategory = preSelectedCategory
+        }
+    }
+
+    LaunchedEffect(cep) {
+        val cleanCep = cep.filter { it.isDigit() }
+        if (cleanCep.length == 8) {
+            cepViewModel.fetchAddressByCep(cleanCep)
+        } else {
+            cepViewModel.resetCepState()
+        }
+    }
+
+    LaunchedEffect(cepUiState) {
+        when (val state = cepUiState) {
+            is CepUiState.Success -> {
+                rua = state.address.street
+                bairro = state.address.neighborhood
+            }
+            is CepUiState.Idle, is CepUiState.Error -> {
+                if (state is CepUiState.Idle) {
+                    rua = ""
+                    bairro = ""
+                }
+            }
+            else -> {}
         }
     }
 
@@ -127,6 +156,7 @@ fun NewProtocolScreen(
             }
 
             Button(
+                text = "Enviar Reclamação",
                 onClick = {
                     viewModel.saveProtocol(
                         selectedCategory = selectedCategory,
@@ -143,14 +173,8 @@ fun NewProtocolScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
                 enabled = insertUiState != InsertUiState.Loading && isFormValid,
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                if (insertUiState == InsertUiState.Loading) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                } else {
-                    Text("Enviar Reclamação")
-                }
-            }
+                variant = if (isFormValid) ButtonVariant.Primary else ButtonVariant.Disabled
+            )
         }
     ) { innerPadding ->
 
@@ -270,7 +294,29 @@ fun NewProtocolScreen(
                 enabled = !useMyLocation,
                 placeholder = "00000-000"
             )
-            Spacer(modifier = Modifier.height(16.dp))
+
+            when (val state = cepUiState) {
+                is CepUiState.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    }
+                }
+                is CepUiState.Error -> {
+                    Text(
+                        text = state.message,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+                    )
+                }
+                else -> Spacer(modifier = Modifier.height(16.dp))
+            }
+
             Input(
                 label = "Rua",
                 value = rua,
@@ -310,7 +356,7 @@ fun NewProtocolScreen(
                 enabled = !useMyLocation,
                 placeholder = "Digite o ponto de referência"
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
