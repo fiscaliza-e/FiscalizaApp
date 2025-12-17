@@ -16,11 +16,11 @@ class ProtocolRepository(private val protocolAPI: ProtocolAPI, private val proto
         try {
             val apiProtocols = protocolAPI.getProtocolsByUserId(userId)
 
-            val protocolEntities = apiProtocols.map { apiProtocol ->
+            val protocols = apiProtocols.map { apiProtocol ->
                 apiProtocol.toEntity(userId)
             }
 
-            protocolDao.insertAll(protocolEntities)
+            protocolDao.insertAll(protocols)
         } catch (e: Exception) {
             android.util.Log.e("ProtocolRepository", "Erro ao sincronizar: ${e.message}")
         }
@@ -31,14 +31,14 @@ class ProtocolRepository(private val protocolAPI: ProtocolAPI, private val proto
     }
 }
 
-private fun Protocol.toEntity(correctUserId: Int): ProtocolEntity {
+private fun Protocol.toEntity(userId: Int): ProtocolEntity {
     return ProtocolEntity(
         protocolNumber = this.protocolNumber,
         title = this.title,
         description = this.description,
         status = this.status,
         date = this.date,
-        userId = correctUserId,
+        userId = userId,
         cep = "",
         rua = "",
         bairro = "",
