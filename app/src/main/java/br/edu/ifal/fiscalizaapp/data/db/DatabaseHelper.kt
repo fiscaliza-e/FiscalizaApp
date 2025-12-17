@@ -52,6 +52,7 @@ abstract class DatabaseHelper : RoomDatabase() {
                     DatabaseHelper::class.java,
                     "fiscalizae.db"
                 )
+                    .fallbackToDestructiveMigration()
                     .addMigrations(MIGRATION_6_7, MIGRATION_7_8)
                     .addCallback(DatabaseCallback(context))
                     .build()

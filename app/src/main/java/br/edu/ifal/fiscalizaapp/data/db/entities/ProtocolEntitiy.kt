@@ -1,13 +1,16 @@
 package br.edu.ifal.fiscalizaapp.data.db.entities
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "protocols")
+@Entity(
+    tableName = "protocols",
+    indices = [Index(value = ["protocolNumber"], unique = true)]
+)
 data class ProtocolEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val protocolNumber: String?,
+    @PrimaryKey
+    val protocolNumber: String,
     val title: String,
     val description: String,
     val status: String,
