@@ -53,6 +53,7 @@ abstract class DatabaseHelper : RoomDatabase() {
                     "fiscalizae.db"
                 )
                     .addMigrations(MIGRATION_6_7, MIGRATION_7_8)
+                    .fallbackToDestructiveMigration()
                     .addCallback(DatabaseCallback(context))
                     .build()
                 INSTANCE = instance
