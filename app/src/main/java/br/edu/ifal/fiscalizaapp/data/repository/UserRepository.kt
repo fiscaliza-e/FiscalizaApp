@@ -1,24 +1,21 @@
 package br.edu.ifal.fiscalizaapp.data.repository
 
+import br.edu.ifal.fiscalizaapp.data.api.dto.NetworkUser
 import br.edu.ifal.fiscalizaapp.data.api.user.UserAPI
 import br.edu.ifal.fiscalizaapp.data.db.dao.UserDao
 import br.edu.ifal.fiscalizaapp.data.db.entities.UserEntity
 
 class UserRepository(
     private val userAPI: UserAPI,
-    private val userDao: UserDao) {
+    private val userDao: UserDao
+) {
 
     suspend fun getUsers(): List<UserEntity> {
-        return try {
-            val apiUsers = userAPI.getUsers()
-            userDao.insertAll(apiUsers)
-            apiUsers
-        } catch (e: Exception) {
-            listOfNotNull(userDao.getUser())
-        }
+        val apiUsers = userAPI.getUsers()
+        return apiUsers.map { it.toEntity() }
     }
 
-    suspend fun getUserById(userId: Int) = userAPI.getUserById(userId)
+    suspend fun getUserById(userId: Int): NetworkUser = userAPI.getUserById(userId)
 
     suspend fun getLoggedUser(): UserEntity? {
         return userDao.getUser()
@@ -47,4 +44,24 @@ class UserRepository(
         userDao.deleteUser(userId.toLong())
     }
 
+    suspend fun updateUser(user: UserEntity): Result<Unit> {
+        return try {
+            userDao.updateUser(user)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+}
+
+private fun NetworkUser.toEntity(): UserEntity {
+    return UserEntity(
+        apiId = id,
+        name = name,
+        cpf = cpf.replace(Regex("[^0-9]"), ""),
+        address = "",
+        profileImage = pictureUrl,
+        email = email,
+        password = password
+    )
 }

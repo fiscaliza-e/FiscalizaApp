@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,19 +36,31 @@ import br.edu.ifal.fiscalizaapp.composables.dialog.DeleteAccountDialog
 import br.edu.ifal.fiscalizaapp.composables.dialog.LogoutDialog
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
+import br.edu.ifal.fiscalizaapp.navigation.routes.chooseAvatarRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.editProfileRoute
 import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
 import br.edu.ifal.fiscalizaapp.ui.state.UiState
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProfilePictureState
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProfileViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
+import coil.compose.AsyncImage
 
 @Composable
 fun ProfileScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
+    viewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current)),
+    profileViewModel: ProfileViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val pictureState by profileViewModel.pictureState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshUser()
+        profileViewModel.fetchProfilePicture()
+    }
 
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -124,23 +138,66 @@ fun ProfileScreen(
                         shape = CircleShape,
                         color = PrimaryGreen.copy(alpha = 0.2f)
                     ) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Foto de perfil",
-                                tint = PrimaryGreen,
-                                modifier = Modifier.size(60.dp)
-                            )
+                        when (val state = pictureState) {
+                            is ProfilePictureState.Success -> {
+                                val pictureUrl = state.pictureUrl
+                                if (!pictureUrl.isNullOrBlank()) {
+                                    AsyncImage(
+                                        model = pictureUrl,
+                                        contentDescription = "Foto de perfil",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                } else {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Person,
+                                            contentDescription = "Foto de perfil",
+                                            tint = PrimaryGreen,
+                                            modifier = Modifier.size(60.dp)
+                                        )
+                                    }
+                                }
+                            }
+
+                            is ProfilePictureState.Loading -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = "Carregando foto de perfil",
+                                        tint = PrimaryGreen,
+                                        modifier = Modifier.size(60.dp)
+                                    )
+                                }
+                            }
+
+                            is ProfilePictureState.Error -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = "Foto de perfil",
+                                        tint = PrimaryGreen,
+                                        modifier = Modifier.size(60.dp)
+                                    )
+                                }
+                            }
                         }
                     }
 
                     Surface(
                         modifier = Modifier
                             .offset(x = 40.dp, y = 40.dp)
-                            .size(36.dp),
+                            .size(36.dp)
+                            .clickable { navController.navigate(chooseAvatarRoute) },
                         shape = CircleShape,
                         color = PrimaryGreen
                     ) {
@@ -201,7 +258,9 @@ fun ProfileScreen(
                                 text = "Editar",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = PrimaryGreen.copy(alpha = 0.5f),
-                                modifier = Modifier.clickable { /* TODO: Navegar para edição */ }
+                                modifier = Modifier.clickable { 
+                                    navController.navigate(editProfileRoute)
+                                }
                             )
                         }
 
