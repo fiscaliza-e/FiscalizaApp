@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import br.edu.ifal.fiscalizaapp.composables.session.SessionManager
 import br.edu.ifal.fiscalizaapp.data.repository.CategoryRepository
 import br.edu.ifal.fiscalizaapp.data.repository.ProtocolRepository
+import br.edu.ifal.fiscalizaapp.data.repository.LocalProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,7 +30,8 @@ sealed class CategoryUiState {
 open class NewProtocolViewModel(
     private val categoryRepository: CategoryRepository,
     private val sessionManager: SessionManager,
-    private val protocolRepository: ProtocolRepository
+    private val protocolRepository: ProtocolRepository,
+    private val localProtocolRepository: LocalProtocolRepository
 ) : ViewModel() {
 
     private val _categoryUiState = MutableStateFlow<CategoryUiState>(CategoryUiState.Loading)
@@ -96,7 +98,6 @@ open class NewProtocolViewModel(
             }
 
             try {
-                val status = "Pendente"
                 val userId = sessionManager.getUserApiId()
 
                 if (userId == -1) {
@@ -106,8 +107,8 @@ open class NewProtocolViewModel(
 
                 val currentDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 
-                val newProtocol = ProtocolEntity(
-                    protocolNumber = null,
+                val protocolEntity = ProtocolEntity(
+                    protocolNumber = "",
                     title = selectedCategory.title,
                     description = description,
                     cep = if (useMyLocation) "" else cep,
@@ -116,15 +117,26 @@ open class NewProtocolViewModel(
                     numero = if (useMyLocation) "" else numero,
                     pontoReferencia = if (useMyLocation) "" else pontoReferencia,
                     useMyLocation = useMyLocation,
-                    status = status,
+                    status = "Pendente",
                     userId = userId,
                     date = currentDate
                 )
 
-                protocolRepository.saveProtocol(newProtocol)
-                _insertUiState.value = InsertUiState.Success
+                try {
+                    protocolRepository.saveProtocol(protocolEntity)
+
+                    _insertUiState.value = InsertUiState.Success
+
+                } catch (apiError: Exception) {
+                    val unsyncedProtocol = protocolEntity.copy(status = "Não Sincronizado")
+                    localProtocolRepository.saveProtocol(unsyncedProtocol)
+
+                    _insertUiState.value = InsertUiState.Error(
+                        "Protocolo salvo localmente. Sem conexão: ${apiError.message}"
+                    )
+                }
             } catch (e: Exception) {
-                _insertUiState.value = InsertUiState.Error(e.message ?: "Erro ao salvar o protocolo.")
+                _insertUiState.value = InsertUiState.Error("Erro inesperado: ${e.message}")
             }
         }
     }

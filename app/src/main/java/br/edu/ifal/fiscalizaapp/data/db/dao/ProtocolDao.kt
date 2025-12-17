@@ -24,4 +24,7 @@ interface ProtocolDao {
 
     @Query("SELECT * FROM protocols")
     suspend fun getAll(): List<ProtocolEntity>
+
+    @Query("DELETE FROM protocols WHERE userId = :userId")
+    suspend fun deleteProtocolsByUserId(userId: Int)
 }

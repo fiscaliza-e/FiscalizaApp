@@ -22,10 +22,8 @@ sealed class RefreshState {
 
 class ProtocolViewModel(
     private val repository: ProtocolRepository,
-    context: Context
+    private val sessionManager: SessionManager
 ) : ViewModel() {
-
-    private val sessionManager = SessionManager(context)
 
     private val userIdFlow = MutableStateFlow(sessionManager.getUserApiId())
 
@@ -41,7 +39,11 @@ class ProtocolViewModel(
     val refreshState: StateFlow<RefreshState> = _refreshState.asStateFlow()
 
     init {
-        refreshUserProtocols()
+        try {
+            refreshUserProtocols()
+        } catch (e: Exception) {
+            _refreshState.value = RefreshState.Error("Erro na inicialização: ${e.message}")
+        }
     }
 
     fun refreshUserProtocols() {
