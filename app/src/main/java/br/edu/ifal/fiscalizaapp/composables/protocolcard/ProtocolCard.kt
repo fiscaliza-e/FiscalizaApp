@@ -50,12 +50,6 @@ fun ProtocolCard(
     modifier: Modifier,
     style: ProtocolCardStyle = ProtocolCardStyle()
 ) {
-    val displayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-
-    val inputFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
-
-    val formattedDate: String = LocalDate.parse(date, inputFormatter).format(displayFormatter)
-
     val statusVariant = mapStatusToVariant(status)
 
     CardBase(modifier) {
@@ -74,7 +68,7 @@ fun ProtocolCard(
                         .weight(1f)
                         .padding(end = 8.dp), maxLines = 1 )
 
-                Text(formattedDate, color = Color.DarkGray)
+                Text(date, color = Color.DarkGray)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
