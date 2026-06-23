@@ -101,7 +101,8 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                     categoryRepository,
                     sessionManager,
                     protocolRepository,
-                    localProtocolRepository
+                    localProtocolRepository,
+                    context.applicationContext
                 ) as T
             }
             modelClass.isAssignableFrom(CepViewModel::class.java) -> {
