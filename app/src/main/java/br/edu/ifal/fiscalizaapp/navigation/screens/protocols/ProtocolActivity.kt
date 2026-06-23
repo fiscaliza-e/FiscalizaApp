@@ -26,6 +26,7 @@ import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.composables.protocollist.ProtocolList
 import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.navigateToProtocolDetail
 import br.edu.ifal.fiscalizaapp.navigation.routes.newProtocolRoute
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.RefreshState
@@ -86,6 +87,9 @@ fun ProtocolScreen(
                 modifier = Modifier.fillMaxSize(),
                 onNewProtocolClick = {
                     navController.navigate(newProtocolRoute)
+                },
+                onProtocolClick = { protocolNumber ->
+                    navController.navigateToProtocolDetail(protocolNumber)
                 }
             )
 

@@ -32,8 +32,11 @@ import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ProtocolList(protocols: List<ProtocolEntity>, modifier: Modifier = Modifier,
-    onNewProtocolClick: () -> Unit
+fun ProtocolList(
+    protocols: List<ProtocolEntity>,
+    modifier: Modifier = Modifier,
+    onNewProtocolClick: () -> Unit,
+    onProtocolClick: (String) -> Unit = {}
 ) {
 
     if (protocols.isEmpty()) {
@@ -95,9 +98,10 @@ fun ProtocolList(protocols: List<ProtocolEntity>, modifier: Modifier = Modifier,
                     title = protocol.title,
                     description = protocol.description,
                     status = protocol.status,
-                    id = protocol.protocolNumber ?: "",
+                    id = protocol.protocolNumber,
                     date = protocol.date,
-                    modifier = Modifier
+                    modifier = Modifier,
+                    onClick = { onProtocolClick(protocol.protocolNumber) }
                 )
             }
         }

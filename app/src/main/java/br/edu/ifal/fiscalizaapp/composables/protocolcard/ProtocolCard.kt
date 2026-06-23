@@ -48,11 +48,12 @@ fun ProtocolCard(
     id: String,
     date: String,
     modifier: Modifier,
+    onClick: (() -> Unit)? = null,
     style: ProtocolCardStyle = ProtocolCardStyle()
 ) {
     val statusVariant = mapStatusToVariant(status)
 
-    CardBase(modifier) {
+    CardBase(modifier, onClick = onClick) {
         Column(
             modifier = Modifier
                 .padding(20.dp, 16.dp)
