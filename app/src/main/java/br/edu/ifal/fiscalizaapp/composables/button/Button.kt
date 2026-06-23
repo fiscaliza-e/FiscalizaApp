@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class ButtonVariant {
@@ -38,10 +39,14 @@ fun Button(
     val primaryColor = PrimaryGreen
     val buttonShape = RoundedCornerShape(8.dp)
 
+    val errorColor = MaterialTheme.colorScheme.error
+    val disabledContainer = MaterialTheme.colorScheme.surfaceVariant
+    val disabledContent = MaterialTheme.colorScheme.onSurfaceVariant
+
     val colors = when (variant) {
         ButtonVariant.Primary -> ButtonDefaults.buttonColors(
             containerColor = primaryColor,
-            contentColor = Color.White
+            contentColor = MaterialTheme.colorScheme.onPrimary
         )
         ButtonVariant.Secondary -> ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
@@ -49,11 +54,11 @@ fun Button(
         )
         ButtonVariant.Danger -> ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = Color.Red
+            contentColor = errorColor
         )
         ButtonVariant.Disabled -> ButtonDefaults.buttonColors(
-            containerColor = Color.Gray,
-            contentColor = Color.White
+            containerColor = disabledContainer,
+            contentColor = disabledContent
         )
         is ButtonVariant.Link -> ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
@@ -63,14 +68,8 @@ fun Button(
 
     val border = when (variant) {
         ButtonVariant.Primary, ButtonVariant.Disabled, is ButtonVariant.Link -> null
-        ButtonVariant.Secondary -> BorderStroke(
-            width = 1.dp,
-            color = primaryColor
-        )
-        ButtonVariant.Danger -> BorderStroke(
-            width = 1.dp,
-            color = Color.Red
-        )
+        ButtonVariant.Secondary -> BorderStroke(width = 1.dp, color = primaryColor)
+        ButtonVariant.Danger -> BorderStroke(width = 1.dp, color = errorColor)
     }
 
     val contentPadding = when (variant) {

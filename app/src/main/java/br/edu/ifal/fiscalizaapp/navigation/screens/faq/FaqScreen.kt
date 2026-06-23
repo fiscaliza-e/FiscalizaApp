@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -69,7 +70,6 @@ fun FaqScreen(
     }
 
     Scaffold(
-        containerColor = Color.White,
         topBar = {
             AppHeader(
                 type = AppHeaderType.MAIN_SCREEN,
@@ -94,8 +94,8 @@ fun FaqScreen(
             )
             Text(
                 text = "Encontre respostas para as perguntas mais comuns.",
-                fontSize = 16.sp,
-                color = Color.Gray,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 12.dp, bottom = 16.dp)
             )
 
@@ -168,7 +168,7 @@ fun ContactUsText(
     ) {
         Text(
             text = buildAnnotatedString {
-                withStyle(style = SpanStyle(color = Color.Gray)) {
+                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
                     append("Não encontrou sua resposta? ")
                 }
                 withStyle(style = SpanStyle(color = PrimaryGreen, fontWeight = FontWeight.Bold)) {

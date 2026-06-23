@@ -14,7 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,8 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.button.Button
@@ -36,14 +39,12 @@ import br.edu.ifal.fiscalizaapp.composables.dialog.DeleteAccountDialog
 import br.edu.ifal.fiscalizaapp.composables.dialog.LogoutDialog
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
-import br.edu.ifal.fiscalizaapp.navigation.routes.chooseAvatarRoute
-import br.edu.ifal.fiscalizaapp.navigation.routes.editProfileRoute
 import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.navigateToChooseAvatarScreen
+import br.edu.ifal.fiscalizaapp.navigation.routes.navigateToEditProfileScreen
 import br.edu.ifal.fiscalizaapp.ui.state.UiState
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProfilePictureState
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProfileViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 import coil.compose.AsyncImage
 
@@ -51,19 +52,23 @@ import coil.compose.AsyncImage
 fun ProfileScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current)),
-    profileViewModel: ProfileViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
+    viewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val pictureState by profileViewModel.pictureState.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.refreshUser()
-        profileViewModel.fetchProfilePicture()
-    }
 
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshUser()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     if (showLogoutDialog) {
         LogoutDialog(
@@ -84,9 +89,7 @@ fun ProfileScreen(
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
                 showDeleteDialog = false
-
                 viewModel.deleteAccount()
-
                 navController.navigate(loginRoute) {
                     popUpTo(0) { inclusive = true }
                     launchSingleTop = true
@@ -100,9 +103,7 @@ fun ProfileScreen(
         topBar = {
             AppHeader(
                 type = AppHeaderType.MAIN_SCREEN,
-                onActionClick = {
-                    showLogoutDialog = true
-                }
+                onActionClick = { showLogoutDialog = true }
             )
         }
     ) { innerPadding ->
@@ -110,7 +111,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            color = Color.White
+            color = MaterialTheme.colorScheme.background
         ) {
             val user = (uiState as? UiState.Success)?.data
 
@@ -138,57 +139,25 @@ fun ProfileScreen(
                         shape = CircleShape,
                         color = PrimaryGreen.copy(alpha = 0.2f)
                     ) {
-                        when (val state = pictureState) {
-                            is ProfilePictureState.Success -> {
-                                val pictureUrl = state.pictureUrl
-                                if (!pictureUrl.isNullOrBlank()) {
-                                    AsyncImage(
-                                        model = pictureUrl,
-                                        contentDescription = "Foto de perfil",
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier.fillMaxSize()
-                                    )
-                                } else {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Person,
-                                            contentDescription = "Foto de perfil",
-                                            tint = PrimaryGreen,
-                                            modifier = Modifier.size(60.dp)
-                                        )
-                                    }
-                                }
-                            }
-
-                            is ProfilePictureState.Loading -> {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Person,
-                                        contentDescription = "Carregando foto de perfil",
-                                        tint = PrimaryGreen,
-                                        modifier = Modifier.size(60.dp)
-                                    )
-                                }
-                            }
-
-                            is ProfilePictureState.Error -> {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Person,
-                                        contentDescription = "Foto de perfil",
-                                        tint = PrimaryGreen,
-                                        modifier = Modifier.size(60.dp)
-                                    )
-                                }
+                        val profileImage = user?.profileImage
+                        if (!profileImage.isNullOrBlank()) {
+                            AsyncImage(
+                                model = profileImage,
+                                contentDescription = "Foto de perfil",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "Foto de perfil",
+                                    tint = PrimaryGreen,
+                                    modifier = Modifier.size(60.dp)
+                                )
                             }
                         }
                     }
@@ -197,7 +166,7 @@ fun ProfileScreen(
                         modifier = Modifier
                             .offset(x = 40.dp, y = 40.dp)
                             .size(36.dp)
-                            .clickable { navController.navigate(chooseAvatarRoute) },
+                            .clickable { navController.navigateToChooseAvatarScreen() },
                         shape = CircleShape,
                         color = PrimaryGreen
                     ) {
@@ -228,7 +197,7 @@ fun ProfileScreen(
                     Text(
                         text = it.getMaskedCpf(),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .padding(bottom = 32.dp)
@@ -240,9 +209,7 @@ fun ProfileScreen(
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -253,13 +220,12 @@ fun ProfileScreen(
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
-
                             Text(
                                 text = "Editar",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = PrimaryGreen.copy(alpha = 0.5f),
-                                modifier = Modifier.clickable { 
-                                    navController.navigate(editProfileRoute)
+                                color = PrimaryGreen,
+                                modifier = Modifier.clickable {
+                                    navController.navigateToEditProfileScreen()
                                 }
                             )
                         }
@@ -271,7 +237,7 @@ fun ProfileScreen(
                                 Text(
                                     text = "Nome completo",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color.Gray,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(bottom = 4.dp)
                                 )
                                 Text(
@@ -284,7 +250,7 @@ fun ProfileScreen(
                                 Text(
                                     text = "Endereço",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color.Gray,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(bottom = 4.dp)
                                 )
                                 Text(
@@ -308,7 +274,7 @@ fun ProfileScreen(
                 Text(
                     text = "Excluir minha conta",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .clickable { showDeleteDialog = true }

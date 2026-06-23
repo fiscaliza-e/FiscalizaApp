@@ -2,6 +2,7 @@ package br.edu.ifal.fiscalizaapp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.edu.ifal.fiscalizaapp.composables.session.SessionManager
 import br.edu.ifal.fiscalizaapp.data.db.dao.UserDao
 import br.edu.ifal.fiscalizaapp.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ sealed class ProfilePictureState {
 
 class ProfileViewModel(
     private val userRepository: UserRepository,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _pictureState =
@@ -27,8 +29,9 @@ class ProfileViewModel(
     fun fetchProfilePicture() {
         viewModelScope.launch {
             _pictureState.value = ProfilePictureState.Loading
+            val sessionId = sessionManager.getUserApiId()
             try {
-                val localUser = userDao.getUser()
+                val localUser = userRepository.getLoggedUser(sessionId)
 
                 if (localUser?.apiId != null) {
                     val apiUser = userRepository.getUserById(localUser.apiId)
@@ -40,7 +43,7 @@ class ProfileViewModel(
                 }
             } catch (e: Exception) {
                 try {
-                    val localUser = userDao.getUser()
+                    val localUser = userRepository.getLoggedUser(sessionId)
                     val pictureUrl = localUser?.profileImage?.takeIf { !it.isNullOrBlank() }
                     _pictureState.value = ProfilePictureState.Success(pictureUrl)
                 } catch (ex: Exception) {

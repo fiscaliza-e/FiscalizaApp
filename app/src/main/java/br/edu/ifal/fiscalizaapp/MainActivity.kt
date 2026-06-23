@@ -13,12 +13,14 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -106,7 +108,6 @@ class MainActivity : ComponentActivity() {
         content: @Composable () -> Unit
     ) {
         Scaffold(
-            containerColor = Color.White,
             bottomBar = {
                 if (shouldShowBars) {
                     BottomNavBar(navController = navController)
@@ -130,7 +131,8 @@ class MainActivity : ComponentActivity() {
         val currentRoute = navBackStackEntry?.destination?.route
 
         NavigationBar(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp
         ) {
             bottomNavBarItems.forEach { item ->
                 val isSelected = currentRoute == item.route
@@ -140,11 +142,8 @@ class MainActivity : ComponentActivity() {
                     onClick = {
                         if (currentRoute != item.route) {
                             navController.navigate(item.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
+                                popUpTo(navController.graph.startDestinationId)
                                 launchSingleTop = true
-                                restoreState = true
                             }
                         }
                     },
@@ -155,14 +154,12 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     label = { Text(item.label) },
-                    colors = NavigationBarItemColors(
+                    colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = PrimaryGreen,
                         selectedTextColor = PrimaryGreen,
-                        selectedIndicatorColor = Color.Transparent,
-                        unselectedIconColor = DarkGray,
-                        unselectedTextColor = DarkGray,
-                        disabledIconColor = LightGray,
-                        disabledTextColor = LightGray
+                        indicatorColor = PrimaryGreen.copy(alpha = 0.1f),
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
             }

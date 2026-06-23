@@ -1,5 +1,6 @@
 package br.edu.ifal.fiscalizaapp.composables.dialog
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -14,12 +15,12 @@ fun LogoutDialog(
     onConfirm: () -> Unit
 ) {
     AlertDialog(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
         title = {
-            Text(text = "Sair da conta", fontWeight = FontWeight.Bold)
+            Text(text = "Sair da conta", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         },
         text = {
-            Text(text = "Tem certeza que deseja sair do aplicativo?")
+            Text(text = "Tem certeza que deseja sair do aplicativo?", color = MaterialTheme.colorScheme.onSurfaceVariant)
         },
         onDismissRequest = onDismiss,
         confirmButton = {

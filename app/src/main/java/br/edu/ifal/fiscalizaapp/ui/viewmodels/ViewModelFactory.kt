@@ -111,7 +111,7 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
                 UserViewModel(userRepository) as T
             }
             modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {
-                ProfileViewModel(userRepository, userDao) as T
+                ProfileViewModel(userRepository, userDao, sessionManager) as T
             }
             modelClass.isAssignableFrom(CategoryViewModel::class.java) -> {
                 CategoryViewModel(categoryRepository) as T

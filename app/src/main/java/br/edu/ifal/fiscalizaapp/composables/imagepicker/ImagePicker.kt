@@ -82,13 +82,14 @@ fun ImagePicker(
 ) {
     val cornerRadius = 12.dp
     val shape = RoundedCornerShape(cornerRadius)
-    val dashedColor = Color(0xFFBDBDBD)
+    val dashedColor = MaterialTheme.colorScheme.outline
+    val surfaceColor = MaterialTheme.colorScheme.surfaceVariant
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(200.dp)
-            .background(Color(0xFFF9F9F9), shape)
+            .background(surfaceColor, shape)
             .dashedBorder(
                 color = dashedColor,
                 strokeWidth = 1.dp,
@@ -106,14 +107,14 @@ fun ImagePicker(
             Icon(
                 imageVector = Icons.Outlined.CameraAlt,
                 contentDescription = strings.contentDescription,
-                tint = Color(0xFFBDBDBD),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(80.dp)
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 text = strings.title,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF9E9E9E)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -124,6 +125,8 @@ fun EditProfileScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             AppHeader(
                 type = AppHeaderType.INTERN_SCREEN,
@@ -138,7 +141,7 @@ fun EditProfileScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            color = Color.White
+            color = MaterialTheme.colorScheme.background
         ) {
             Column(
                 modifier = Modifier

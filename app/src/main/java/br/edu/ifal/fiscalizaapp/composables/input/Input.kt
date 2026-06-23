@@ -60,18 +60,38 @@ private data class InputColors(
 private fun InputVariant.getColors(enabled: Boolean): InputColors {
     if (!enabled) {
         return InputColors(
-            border = Color.LightGray,
-            text = Color.DarkGray,
-            background = Color(0xFFF5F5F5),
-            placeholder = Color.LightGray
+            border = MaterialTheme.colorScheme.outlineVariant,
+            text = MaterialTheme.colorScheme.onSurfaceVariant,
+            background = MaterialTheme.colorScheme.surfaceVariant,
+            placeholder = MaterialTheme.colorScheme.outlineVariant
         )
     }
 
     return when (this) {
-        InputVariant.Primary -> InputColors(Color.Gray, Color.Black, Color.White, Color.Gray)
-        InputVariant.Secondary -> InputColors(Color.Gray, Color.Black, Color.White, Color.Gray)
-        InputVariant.Danger -> InputColors(Color.Red, Color.Red, Color.White, Color.Gray)
-        is InputVariant.Link -> InputColors(color, color, Color.Transparent, Color.Gray)
+        InputVariant.Primary -> InputColors(
+            border = MaterialTheme.colorScheme.outline,
+            text = MaterialTheme.colorScheme.onSurface,
+            background = MaterialTheme.colorScheme.surface,
+            placeholder = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        InputVariant.Secondary -> InputColors(
+            border = MaterialTheme.colorScheme.outline,
+            text = MaterialTheme.colorScheme.onSurface,
+            background = MaterialTheme.colorScheme.surface,
+            placeholder = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        InputVariant.Danger -> InputColors(
+            border = MaterialTheme.colorScheme.error,
+            text = MaterialTheme.colorScheme.error,
+            background = MaterialTheme.colorScheme.surface,
+            placeholder = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        is InputVariant.Link -> InputColors(
+            border = color,
+            text = color,
+            background = Color.Transparent,
+            placeholder = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
@@ -209,7 +229,7 @@ fun Input(
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
             )
         }
@@ -221,7 +241,7 @@ fun Input(
             shape = RoundedCornerShape(8.dp),
             color = backgroundColor,
             border = BorderStroke(
-                width = if (style.variant is InputVariant.Link) 1.dp else 2.dp,
+                width = if (isFocused && style.variant !is InputVariant.Link) 2.dp else 1.dp,
                 color = currentBorderColor
             )
         ) {
@@ -289,7 +309,7 @@ fun Input(
                     Icon(
                         imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                         contentDescription = "Alternar visibilidade da senha",
-                        tint = if (enabled) currentBorderColor else Color.LightGray,
+                        tint = if (enabled) currentBorderColor else MaterialTheme.colorScheme.outlineVariant,
                         modifier = Modifier
                             .size(22.dp)
                             .then(

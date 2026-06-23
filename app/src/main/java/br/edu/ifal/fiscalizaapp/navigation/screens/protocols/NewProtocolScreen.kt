@@ -1,6 +1,7 @@
 package br.edu.ifal.fiscalizaapp.navigation.screens.protocols
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,12 +13,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -45,6 +47,8 @@ import br.edu.ifal.fiscalizaapp.composables.input.Input
 import br.edu.ifal.fiscalizaapp.composables.input.InputType
 import br.edu.ifal.fiscalizaapp.composables.input.cepMask
 import br.edu.ifal.fiscalizaapp.composables.textarea.TextArea
+import br.edu.ifal.fiscalizaapp.ui.theme.LightGray
+import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CategoryUiModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CategoryUiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CepUiState
@@ -131,7 +135,6 @@ fun NewProtocolScreen(
     }
 
     Scaffold(
-        containerColor = Color.White,
         topBar = {
             AppHeader(
                 type = AppHeaderType.INTERN_SCREEN,
@@ -190,7 +193,7 @@ fun NewProtocolScreen(
                 text = "Categoria",
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.padding(top = 8.dp),
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -226,17 +229,8 @@ fun NewProtocolScreen(
             TextArea(
                 label = "Descrição",
                 value = description,
-                onValueChange = { if (it.length <= 500) description = it },
+                onValueChange = { description = it },
                 placeholderText = "Descreva com detalhes o que está acontecendo. Ex: Existe um grande buraco na rua em frente ao número 123 que está causando transtornos."
-            )
-            Text(
-                text = "${description.length}/500",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 8.dp),
-                textAlign = TextAlign.End,
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
             )
 
 
@@ -254,35 +248,44 @@ fun NewProtocolScreen(
             Spacer(modifier = Modifier.height(24.dp))
             SectionTitle(text = "3. Localização do problema")
 
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = useMyLocation,
-                        onClick = { useMyLocation = true }
-                    ), verticalAlignment = Alignment.CenterVertically
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = RoundedCornerShape(8.dp)
             ) {
-                RadioButton(
-                    selected = useMyLocation,
-                    onClick = { useMyLocation = true }
-                )
-                Text("Usar minha localização atual", color = Color.Black)
+                Column {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = useMyLocation,
+                                onClick = { useMyLocation = true }
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = useMyLocation,
+                            onClick = { useMyLocation = true }
+                        )
+                        Text("Usar minha localização atual", color = MaterialTheme.colorScheme.onSurface)
+                    }
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = !useMyLocation,
+                                onClick = { useMyLocation = false }
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = !useMyLocation,
+                            onClick = { useMyLocation = false }
+                        )
+                        Text("Preencher manualmente", color = MaterialTheme.colorScheme.onSurface)
+                    }
+                }
             }
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = !useMyLocation,
-                        onClick = { useMyLocation = false }
-                    ), verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = !useMyLocation,
-                    onClick = { useMyLocation = false }
-                )
-                Text("Preencher manualmente", color = Color.Black)
-            }
-
 
             Spacer(modifier = Modifier.height(16.dp))
             Input(
@@ -363,10 +366,19 @@ fun NewProtocolScreen(
 
 @Composable
 private fun SectionTitle(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        color = Color.Black
-    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .width(4.dp)
+                .height(22.dp)
+                .background(PrimaryGreen, RoundedCornerShape(2.dp))
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
 }

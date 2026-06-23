@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
@@ -22,7 +23,10 @@ fun CardBase(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     showRipple: Boolean = true,
-    colors: CardColors = CardDefaults.cardColors(containerColor = Color.White),
+    colors: CardColors = CardDefaults.cardColors(
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface
+    ),
     elevation: CardElevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     contentPadding: PaddingValues = PaddingValues(16.dp),
     content: @Composable () -> Unit

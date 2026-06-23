@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 val PrimaryGreen = Color(0xFF28947F)
 val SecondaryGreen = Color(0xFFC2CD4B)
-val DarkGray = Color(0xFF6C6C6C)
+val DarkGray = Color(0xFF303030)
 val LightGray = Color(0xFFF2F2F2)
 val PendingBackGround = Color(0xFFFFEFB0)
 val Pending = Color(0xFFB45309)

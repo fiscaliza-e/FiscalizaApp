@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -56,7 +57,7 @@ fun RegisterScreen(
     cepViewModel: CepViewModel = viewModel(factory = ViewModelFactory(LocalContext.current)),
     userViewModel: UserViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
-    Scaffold(containerColor = Color.White) { innerPadding ->
+    Scaffold { innerPadding ->
 
         var formState by remember { mutableStateOf(RegisterFormState()) }
         var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -127,8 +128,8 @@ fun RegisterScreen(
             )
             Text(
                 text = "Preencha seus dados para começar.",
-                fontSize = 16.sp,
-                color = Color.Gray,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp)
             )
             Spacer(modifier = Modifier.height(32.dp))
@@ -274,7 +275,7 @@ fun RegisterScreen(
                     onCheckedChange = { formState = formState.copy(agreesToPolicy = it) }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Li e concordo com a Política de Privacidade.", fontSize = 14.sp)
+                Text(text = "Li e concordo com a Política de Privacidade.", fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -310,7 +311,7 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Row {
-                Text(text = "Já possui uma conta? ", fontSize = 14.sp)
+                Text(text = "Já possui uma conta? ", fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground)
                 Text(
                     text = "Entre",
                     fontSize = 14.sp,

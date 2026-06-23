@@ -66,7 +66,6 @@ fun ProtocolScreen(
     }
 
     Scaffold(
-        containerColor = Color.White,
         topBar = {
             AppHeader(
                 type = AppHeaderType.MAIN_SCREEN,

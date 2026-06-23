@@ -17,8 +17,8 @@ class UserRepository(
 
     suspend fun getUserById(userId: Int): NetworkUser = userAPI.getUserById(userId)
 
-    suspend fun getLoggedUser(): UserEntity? {
-        return userDao.getUser()
+    suspend fun getLoggedUser(sessionId: Int): UserEntity? {
+        return userDao.getByApiId(sessionId) ?: userDao.getById(sessionId.toLong())
     }
 
     suspend fun insert(user: UserEntity): Result<Unit> {

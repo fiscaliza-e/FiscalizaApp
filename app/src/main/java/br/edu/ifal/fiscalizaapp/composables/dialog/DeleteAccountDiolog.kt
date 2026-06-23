@@ -1,5 +1,6 @@
 package br.edu.ifal.fiscalizaapp.composables.dialog
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -13,12 +14,15 @@ fun DeleteAccountDialog(
     onConfirm: () -> Unit
 ) {
     AlertDialog(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
         title = {
             Text(text = "Excluir Conta", fontWeight = FontWeight.Bold, color = Color.Red)
         },
         text = {
-            Text(text = "Tem certeza que deseja excluir sua conta permanentemente? Todos os seus dados e protocolos serão perdidos. Essa ação não pode ser desfeita.")
+            Text(
+                text = "Tem certeza que deseja excluir sua conta permanentemente? Todos os seus dados e protocolos serão perdidos. Essa ação não pode ser desfeita.",
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         },
         onDismissRequest = onDismiss,
         confirmButton = {

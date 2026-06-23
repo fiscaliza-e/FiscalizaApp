@@ -15,32 +15,40 @@ private val DarkColorScheme = darkColorScheme(
     primary = PrimaryGreen,
     secondary = SecondaryGreen,
     tertiary = SecondaryGreen,
-    background = Color(0xFF1C1C1C),
-    surface = Color(0xFF2B2B2B),
+    background = Color(0xFF121212),
+    surface = Color(0xFF1E1E1E),
     onPrimary = Color.White,
     onSecondary = Color.Black,
     onTertiary = Color.Black,
-    onBackground = LightGray,
-    onSurface = LightGray
+    onBackground = Color.White,
+    onSurface = Color.White,
+    onSurfaceVariant = Color(0xFFBDBDBD)
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryGreen,
     secondary = SecondaryGreen,
     tertiary = SecondaryGreen,
-    background = LightGray,
+    background = Color(0xFFF8F9FA),
     surface = Color.White,
     onPrimary = Color.White,
     onSecondary = Color.Black,
     onTertiary = Color.Black,
     onBackground = DarkGray,
-    onSurface = DarkGray
+    onSurface = DarkGray,
+    onSurfaceVariant = Color(0xFF616161),
+    surfaceVariant = Color(0xFFF0F4F3),
+    outlineVariant = Color(0xFFDCE1DF),
+    surfaceContainer = Color(0xFFF0F4F3),
+    surfaceContainerLow = Color(0xFFF5F8F7),
+    surfaceContainerHigh = Color(0xFFE8EDEB),
+    surfaceContainerHighest = Color(0xFFE2E8E6)
 )
 
 @Composable
 fun FiscalizaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

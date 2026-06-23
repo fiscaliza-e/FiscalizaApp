@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -38,7 +40,7 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
-    Scaffold(containerColor = Color.White) { innerPadding ->
+    Scaffold { innerPadding ->
 
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
@@ -116,7 +118,9 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                     text = "Esqueceu sua senha?",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryGreen
+                    color = PrimaryGreen,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.End
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -155,6 +159,7 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                 Text(
                     text = "Não possui uma conta? ",
                     fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "Cadastre-se",

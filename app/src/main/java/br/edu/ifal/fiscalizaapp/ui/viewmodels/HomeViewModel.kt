@@ -34,7 +34,7 @@ class HomeViewModel (
 
         viewModelScope.launch {
             try {
-                val localUser = repository.getLoggedUser()
+                val localUser = repository.getLoggedUser(sessionManager.getUserApiId())
 
                 if (localUser != null) {
                     val userWithPhoto = if (localUser.profileImage.isNullOrBlank() && localUser.apiId != null) {
@@ -87,7 +87,7 @@ class HomeViewModel (
             _updateState.value = UpdateProfileState.Loading
 
             try {
-                val currentUser = repository.getLoggedUser()
+                val currentUser = repository.getLoggedUser(sessionManager.getUserApiId())
                 if (currentUser != null) {
                     val updatedUser = currentUser.copy(
                         name = name.trim(),
@@ -118,17 +118,25 @@ class HomeViewModel (
     }
 
     fun refreshUser() {
-        loadCurrentUser()
+        viewModelScope.launch {
+            try {
+                val localUser = repository.getLoggedUser(sessionManager.getUserApiId())
+                if (localUser != null) {
+                    _uiState.value = UiState.Success(localUser)
+                }
+            } catch (_: Exception) {}
+        }
     }
 
     fun updateProfilePicture(apiId: Int) {
         viewModelScope.launch {
             try {
-                val currentUser = repository.getLoggedUser()
+                val currentUser = repository.getLoggedUser(sessionManager.getUserApiId())
 
                 if (currentUser != null) {
                     val updatedUser = currentUser.copy(
-                        apiId = apiId
+                        apiId = apiId,
+                        profileImage = null
                     )
 
                     repository.updateUser(updatedUser)

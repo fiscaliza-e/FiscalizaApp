@@ -14,9 +14,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -86,7 +89,6 @@ fun HomeScreen(
     }
 
     Scaffold(
-        containerColor = Color.White,
         topBar = {
             AppHeader(
                 type = AppHeaderType.MAIN_SCREEN,
@@ -96,7 +98,7 @@ fun HomeScreen(
             )
         }
     ) { innerPadding ->
-        LazyVerticalGrid (
+        LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .padding(innerPadding)
@@ -107,50 +109,52 @@ fun HomeScreen(
         ) {
 
             item(span = { GridItemSpan(2) }) {
-                when (val state = userUiState) {
-                    is UiState.Loading -> Text(
-                        text = "Olá...",
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                    is UiState.Success -> Text(
-                        text = "Olá, ${state.data.name}!",
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                    is UiState.Error -> Text(
-                        text = "Olá!",
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
+                val greetingName = when (val state = userUiState) {
+                    is UiState.Loading -> ""
+                    is UiState.Success -> state.data.name
+                    is UiState.Error -> ""
+                }
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    color = PrimaryGreen
+                ) {
+                    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp)) {
+                        Text(
+                            text = if (greetingName.isNotEmpty()) "Olá, $greetingName!" else "Olá!",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "O que você quer reportar hoje?",
+                            fontSize = 14.sp,
+                            color = Color.White.copy(alpha = 0.85f)
+                        )
+                    }
                 }
             }
 
             item(span = { GridItemSpan(2) }) {
-                Column {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Button(
-                        text = "Fazer Nova Reclamação",
-                        onClick = {
-                            navController.navigate(newProtocolRoute)
-                        },
-                        variant = ButtonVariant.Primary,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+                Button(
+                    text = "Fazer Nova Reclamação",
+                    onClick = {
+                        navController.navigate(newProtocolRoute)
+                    },
+                    variant = ButtonVariant.Primary,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             item(span = { GridItemSpan(2) }) {
                 Column {
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Reclamações Frequentes",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }

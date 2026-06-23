@@ -38,7 +38,6 @@ fun CategoryListScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
-        containerColor = Color.White,
         topBar = {
             AppHeader(
                 type = AppHeaderType.INTERN_SCREEN,

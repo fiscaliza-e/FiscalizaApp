@@ -2,6 +2,7 @@ package br.edu.ifal.fiscalizaapp.composables.textarea
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,18 +14,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
 
 private val HorizontalPadding = 16.dp
 private val VerticalPadding = 16.dp
-private val BorderGray = Color(0xFFCCCCCC)
-private val WhiteBackground = Color.White
 private val FieldShape = RoundedCornerShape(8.dp)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,10 +37,14 @@ fun TextArea(
 ) {
     val actualCharacters = value.length
     val isError = actualCharacters > maxLength
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
 
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    val surface = MaterialTheme.colorScheme.surface
+    val counterColor = if (isError) MaterialTheme.colorScheme.error
+                       else MaterialTheme.colorScheme.onSurfaceVariant
+
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelLarge,
@@ -52,7 +55,7 @@ fun TextArea(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(WhiteBackground, shape = FieldShape)
+                .background(surface, shape = FieldShape)
         ) {
             BasicTextField(
                 value = value,
@@ -65,6 +68,7 @@ fun TextArea(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 5,
                 maxLines = 8,
+                interactionSource = interactionSource,
                 decorationBox = { innerTextField ->
                     OutlinedTextFieldDefaults.DecorationBox(
                         value = value,
@@ -72,23 +76,24 @@ fun TextArea(
                         enabled = true,
                         singleLine = false,
                         visualTransformation = VisualTransformation.None,
-                        interactionSource = remember { MutableInteractionSource() },
+                        interactionSource = interactionSource,
+                        isError = isError,
                         placeholder = {
                             if (value.isEmpty()) {
                                 Text(
                                     text = placeholderText,
-                                    color = BorderGray
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = BorderGray,
-                            focusedBorderColor = BorderGray,
-                            disabledBorderColor = BorderGray,
-                            errorBorderColor = BorderGray,
-                            cursorColor = MaterialTheme.colorScheme.onSurface,
-                            unfocusedContainerColor = WhiteBackground,
-                            focusedContainerColor = WhiteBackground
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            errorBorderColor = MaterialTheme.colorScheme.error,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            unfocusedContainerColor = surface,
+                            focusedContainerColor = surface,
+                            errorContainerColor = surface
                         ),
                         contentPadding = OutlinedTextFieldDefaults.contentPadding(
                             start = HorizontalPadding,
@@ -100,15 +105,15 @@ fun TextArea(
                             OutlinedTextFieldDefaults.Container(
                                 enabled = true,
                                 isError = isError,
-                                interactionSource = remember { MutableInteractionSource() },
-                                shape = FieldShape
+                                interactionSource = interactionSource,
+                                shape = FieldShape,
+                                focusedBorderThickness = 2.dp,
+                                unfocusedBorderThickness = 1.dp
                             )
                         }
                     )
                 }
             )
-
-            val counterColor = if (isError) Color.Red else BorderGray
 
             Text(
                 text = "$actualCharacters / $maxLength",
