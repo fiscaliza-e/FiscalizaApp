@@ -44,6 +44,7 @@ private fun Protocol.toEntity(userId: Int): ProtocolEntity {
         bairro = "",
         numero = "",
         pontoReferencia = "",
-        useMyLocation = false
+        useMyLocation = false,
+        photoUris = ""
     )
 }

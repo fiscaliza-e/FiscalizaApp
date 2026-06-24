@@ -1,5 +1,7 @@
 package br.edu.ifal.fiscalizaapp.ui.viewmodels
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.edu.ifal.fiscalizaapp.composables.session.SessionManager
@@ -7,10 +9,13 @@ import br.edu.ifal.fiscalizaapp.data.repository.CategoryRepository
 import br.edu.ifal.fiscalizaapp.data.repository.ProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.repository.LocalProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -31,7 +36,8 @@ open class NewProtocolViewModel(
     private val categoryRepository: CategoryRepository,
     private val sessionManager: SessionManager,
     private val protocolRepository: ProtocolRepository,
-    private val localProtocolRepository: LocalProtocolRepository
+    private val localProtocolRepository: LocalProtocolRepository,
+    private val context: Context
 ) : ViewModel() {
 
     private val _categoryUiState = MutableStateFlow<CategoryUiState>(CategoryUiState.Loading)
@@ -78,6 +84,7 @@ open class NewProtocolViewModel(
         rua: String,
         numero: String,
         pontoReferencia: String,
+        selectedPhotoUris: List<Uri> = emptyList()
     ) {
         viewModelScope.launch {
             _insertUiState.value = InsertUiState.Loading
@@ -105,6 +112,19 @@ open class NewProtocolViewModel(
                     return@launch
                 }
 
+                val savedPhotoPaths = withContext(Dispatchers.IO) {
+                    val dir = File(context.filesDir, "protocol_photos").also { it.mkdirs() }
+                    selectedPhotoUris.mapIndexedNotNull { index, uri ->
+                        runCatching {
+                            val dest = File(dir, "${System.currentTimeMillis()}_$index.jpg")
+                            context.contentResolver.openInputStream(uri)?.use { input ->
+                                dest.outputStream().use { input.copyTo(it) }
+                            }
+                            dest.absolutePath
+                        }.getOrNull()
+                    }
+                }
+
                 val currentDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 
                 val protocolEntity = ProtocolEntity(
@@ -119,18 +139,16 @@ open class NewProtocolViewModel(
                     useMyLocation = useMyLocation,
                     status = "Pendente",
                     userId = userId,
-                    date = currentDate
+                    date = currentDate,
+                    photoUris = savedPhotoPaths.joinToString(",")
                 )
 
                 try {
                     protocolRepository.saveProtocol(protocolEntity)
-
                     _insertUiState.value = InsertUiState.Success
-
                 } catch (apiError: Exception) {
                     val unsyncedProtocol = protocolEntity.copy(status = "Não Sincronizado")
                     localProtocolRepository.saveProtocol(unsyncedProtocol)
-
                     _insertUiState.value = InsertUiState.Error(
                         "Protocolo salvo localmente. Sem conexão: ${apiError.message}"
                     )

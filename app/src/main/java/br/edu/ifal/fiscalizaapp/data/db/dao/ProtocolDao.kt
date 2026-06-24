@@ -25,6 +25,9 @@ interface ProtocolDao {
     @Query("SELECT * FROM protocols")
     suspend fun getAll(): List<ProtocolEntity>
 
+    @Query("SELECT * FROM protocols WHERE protocolNumber = :protocolNumber LIMIT 1")
+    suspend fun getByProtocolNumber(protocolNumber: String): ProtocolEntity?
+
     @Query("DELETE FROM protocols WHERE userId = :userId")
     suspend fun deleteProtocolsByUserId(userId: Int)
 }

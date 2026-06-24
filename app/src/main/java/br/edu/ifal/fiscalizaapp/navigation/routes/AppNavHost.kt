@@ -51,6 +51,7 @@ fun AppNavHost(navController: NavHostController) {
         homeScreen(navController)
         protocolScreen(navController)
         newProtocolScreen(navController)
+        protocolDetailScreen(navController)
         categoryListScreen(navController)
         profileScreen(navController)
         chooseAvatarScreen(navController)

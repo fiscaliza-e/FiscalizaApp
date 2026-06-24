@@ -1,6 +1,9 @@
 package br.edu.ifal.fiscalizaapp.navigation.screens.protocols
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -77,6 +80,13 @@ fun NewProtocolScreen(
     var bairro by remember { mutableStateOf("") }
     var numero by remember { mutableStateOf("") }
     var pontoReferencia by remember { mutableStateOf("") }
+    var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris ->
+        selectedImages = (selectedImages + uris).distinct().take(6)
+    }
 
     val categoryUiState by viewModel.categoryUiState.collectAsState()
     val insertUiState by viewModel.insertUiState.collectAsState()
@@ -169,7 +179,8 @@ fun NewProtocolScreen(
                         rua = rua,
                         bairro = bairro,
                         numero = numero,
-                        pontoReferencia = pontoReferencia
+                        pontoReferencia = pontoReferencia,
+                        selectedPhotoUris = selectedImages
                     )
                 },
                 modifier = Modifier
@@ -238,11 +249,9 @@ fun NewProtocolScreen(
             SectionTitle(text = "2. Adicione fotos (Opcional)")
             Spacer(modifier = Modifier.height(8.dp))
             ImagePicker(
-                onClick = {
-                    Toast
-                        .makeText(context, "Abrir câmera/galeria...", Toast.LENGTH_SHORT)
-                        .show()
-                }
+                onClick = { photoPickerLauncher.launch("image/*") },
+                selectedImages = selectedImages,
+                onRemove = { uri -> selectedImages = selectedImages - uri }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
