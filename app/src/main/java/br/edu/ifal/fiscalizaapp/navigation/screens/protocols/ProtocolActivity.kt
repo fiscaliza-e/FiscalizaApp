@@ -1,13 +1,26 @@
 package br.edu.ifal.fiscalizaapp.navigation.screens.protocols
 
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -28,6 +43,7 @@ import br.edu.ifal.fiscalizaapp.composables.protocollist.ProtocolList
 import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
 import br.edu.ifal.fiscalizaapp.navigation.routes.navigateToProtocolDetail
 import br.edu.ifal.fiscalizaapp.navigation.routes.newProtocolRoute
+import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.RefreshState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
@@ -36,6 +52,7 @@ import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 @Composable
 fun ProtocolScreen(
     navController: NavController,
+    showCreated: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -46,9 +63,17 @@ fun ProtocolScreen(
     val filterStatus by viewModel.filterStatus.collectAsStateWithLifecycle()
     val sortOrder by viewModel.sortOrder.collectAsStateWithLifecycle()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        if (showCreated) {
+            snackbarHostState.showSnackbar("SUCCESS:Protocolo enviado com sucesso!")
+        }
+    }
+
     LaunchedEffect(refreshState) {
         if (refreshState is RefreshState.Error) {
-            Toast.makeText(context, (refreshState as RefreshState.Error).message, Toast.LENGTH_SHORT).show()
+            snackbarHostState.showSnackbar("ERROR:${(refreshState as RefreshState.Error).message}")
         }
     }
 
@@ -76,6 +101,35 @@ fun ProtocolScreen(
                     showLogoutDialog = true
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                val isError = data.visuals.message.startsWith("ERROR:")
+                val message = data.visuals.message.removePrefix("SUCCESS:").removePrefix("ERROR:")
+                val bgColor = if (isError) MaterialTheme.colorScheme.error else PrimaryGreen
+                val icon = if (isError) Icons.Default.Cancel else Icons.Default.CheckCircle
+                Snackbar(
+                    modifier = Modifier.padding(16.dp),
+                    containerColor = bgColor,
+                    contentColor = Color.White,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = message,
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
         }
     ) { innerPadding ->
         Box(

@@ -128,7 +128,7 @@ open class NewProtocolViewModel(
                 val currentDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 
                 val protocolEntity = ProtocolEntity(
-                    protocolNumber = "",
+                    protocolNumber = "LOCAL-${System.currentTimeMillis()}",
                     title = selectedCategory.title,
                     description = description,
                     cep = if (useMyLocation) "" else cep,
