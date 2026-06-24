@@ -4,6 +4,7 @@ import br.edu.ifal.fiscalizaapp.data.api.dto.NetworkUser
 import br.edu.ifal.fiscalizaapp.data.api.user.UserAPI
 import br.edu.ifal.fiscalizaapp.data.db.dao.UserDao
 import br.edu.ifal.fiscalizaapp.data.db.entities.UserEntity
+import java.security.MessageDigest
 
 class UserRepository(
     private val userAPI: UserAPI,
@@ -16,6 +17,8 @@ class UserRepository(
     }
 
     suspend fun getUserById(userId: Int): NetworkUser = userAPI.getUserById(userId)
+
+    suspend fun getUserByEmail(email: String): UserEntity? = userDao.getByEmail(email)
 
     suspend fun getLoggedUser(sessionId: Int): UserEntity? {
         return userDao.getByApiId(sessionId) ?: userDao.getById(sessionId.toLong())
@@ -33,7 +36,7 @@ class UserRepository(
                 return Result.failure(Exception("Este CPF já está cadastrado."))
             }
 
-            userDao.insert(user)
+            userDao.insert(user.copy(password = hashSha256(user.password)))
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -52,6 +55,11 @@ class UserRepository(
             Result.failure(e)
         }
     }
+}
+
+internal fun hashSha256(input: String): String {
+    val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
+    return bytes.joinToString("") { "%02x".format(it) }
 }
 
 private fun NetworkUser.toEntity(): UserEntity {

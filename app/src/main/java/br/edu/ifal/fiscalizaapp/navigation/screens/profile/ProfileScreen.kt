@@ -44,7 +44,7 @@ import br.edu.ifal.fiscalizaapp.navigation.routes.navigateToChooseAvatarScreen
 import br.edu.ifal.fiscalizaapp.navigation.routes.navigateToEditProfileScreen
 import br.edu.ifal.fiscalizaapp.ui.state.UiState
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProfileViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 import coil.compose.AsyncImage
 
@@ -52,7 +52,7 @@ import coil.compose.AsyncImage
 fun ProfileScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
+    viewModel: ProfileViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

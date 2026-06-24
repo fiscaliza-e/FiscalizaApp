@@ -3,7 +3,7 @@ package br.edu.ifal.fiscalizaapp.ui.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import br.edu.ifal.fiscalizaapp.composables.session.SessionManager // Import necessário
+import br.edu.ifal.fiscalizaapp.data.session.SessionManager
 import br.edu.ifal.fiscalizaapp.data.api.cep.CepRetrofitHelper
 import br.edu.ifal.fiscalizaapp.data.api.cep.CepAPI
 import br.edu.ifal.fiscalizaapp.data.api.RetrofitHelper
@@ -87,14 +87,17 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.Factory
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
         return when {
+            modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
+                LoginViewModel(userRepository, sessionManager) as T
+            }
             modelClass.isAssignableFrom(ProtocolViewModel::class.java) -> {
                 ProtocolViewModel(protocolRepository, sessionManager) as T
             }
             modelClass.isAssignableFrom(FaqViewModel::class.java) -> {
-                FaqViewModel(faqRepository, context) as T
+                FaqViewModel(faqRepository, sessionManager) as T
             }
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
-                HomeViewModel(userRepository, context) as T
+                HomeViewModel(userRepository, sessionManager) as T
             }
             modelClass.isAssignableFrom(NewProtocolViewModel::class.java) -> {
                 NewProtocolViewModel(

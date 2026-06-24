@@ -36,7 +36,7 @@ import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.data.db.entities.UserEntity
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProfileViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.UserUiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.UserViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
@@ -47,7 +47,7 @@ fun ChooseAvatarScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = viewModel(factory = ViewModelFactory(LocalContext.current)),
-    homeViewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
+    profileViewModel: ProfileViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
     val uiState by userViewModel.uiState.collectAsState()
 
@@ -122,7 +122,7 @@ fun ChooseAvatarScreen(
                                     user = user,
                                     onClick = {
                                         val apiId = user.apiId ?: user.id
-                                        homeViewModel.updateProfilePicture(apiId)
+                                        profileViewModel.updateProfilePicture(apiId)
                                         navController.popBackStack()
                                     }
                                 )

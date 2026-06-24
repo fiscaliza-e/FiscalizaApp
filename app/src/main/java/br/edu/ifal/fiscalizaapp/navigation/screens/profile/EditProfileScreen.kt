@@ -30,7 +30,7 @@ import br.edu.ifal.fiscalizaapp.composables.input.cepMask
 import br.edu.ifal.fiscalizaapp.ui.state.UiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CepUiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CepViewModel
-import br.edu.ifal.fiscalizaapp.ui.viewmodels.HomeViewModel
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProfileViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.UpdateProfileState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 
@@ -38,11 +38,11 @@ import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 fun EditProfileScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    homeViewModel: HomeViewModel = viewModel(factory = ViewModelFactory(LocalContext.current)),
+    profileViewModel: ProfileViewModel = viewModel(factory = ViewModelFactory(LocalContext.current)),
     cepViewModel: CepViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
-    val uiState by homeViewModel.uiState.collectAsState()
-    val updateState by homeViewModel.updateState.collectAsState()
+    val uiState by profileViewModel.uiState.collectAsState()
+    val updateState by profileViewModel.updateState.collectAsState()
     val cepUiState by cepViewModel.uiState.collectAsState()
 
     var name by remember { mutableStateOf("") }
@@ -113,7 +113,7 @@ fun EditProfileScreen(
     LaunchedEffect(updateState) {
         when (val state = updateState) {
             is UpdateProfileState.Success -> {
-                homeViewModel.resetUpdateState()
+                profileViewModel.resetUpdateState()
                 navController.popBackStack()
             }
             is UpdateProfileState.Error -> {
@@ -298,7 +298,7 @@ fun EditProfileScreen(
                                     val fullAddress = "${street.trim()}, ${number.trim()}, ${neighborhood.trim()} - ${city.trim()}/${uf.trim()}"
 
                                     errorMessage = null
-                                    homeViewModel.updateProfile(name, fullAddress)
+                                    profileViewModel.updateProfile(name, fullAddress)
                                 },
                                 variant = ButtonVariant.Primary,
                                 modifier = Modifier.fillMaxWidth()
