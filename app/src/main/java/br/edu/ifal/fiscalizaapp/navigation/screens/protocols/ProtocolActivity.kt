@@ -3,24 +3,11 @@ package br.edu.ifal.fiscalizaapp.navigation.screens.protocols
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,14 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.dialog.LogoutDialog
+import br.edu.ifal.fiscalizaapp.composables.snackbar.FiscalizaSnackbarHost
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.composables.protocollist.ProtocolList
@@ -102,35 +87,7 @@ fun ProtocolScreen(
                 }
             )
         },
-        snackbarHost = {
-            SnackbarHost(snackbarHostState) { data ->
-                val isError = data.visuals.message.startsWith("ERROR:")
-                val message = data.visuals.message.removePrefix("SUCCESS:").removePrefix("ERROR:")
-                val bgColor = if (isError) MaterialTheme.colorScheme.error else PrimaryGreen
-                val icon = if (isError) Icons.Default.Cancel else Icons.Default.CheckCircle
-                Snackbar(
-                    modifier = Modifier.padding(16.dp),
-                    containerColor = bgColor,
-                    contentColor = Color.White,
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = message,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
-        }
+        snackbarHost = { FiscalizaSnackbarHost(snackbarHostState) }
     ) { innerPadding ->
         Box(
             modifier = modifier

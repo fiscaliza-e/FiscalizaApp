@@ -11,17 +11,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -29,8 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -52,6 +51,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
+import br.edu.ifal.fiscalizaapp.composables.snackbar.FiscalizaSnackbarHost
 import br.edu.ifal.fiscalizaapp.composables.dropdown.Dropdown
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
@@ -236,6 +236,35 @@ fun NewProtocolScreen(
 
     val transporte = isTransporte(selectedCategory)
 
+    val isFormValid by remember(
+        selectedCategory, description, useMyLocation,
+        cep, rua, bairro, numero,
+        numeroPoste, areaSaneamento, nomeOrgao,
+        numeroTransporte, linhaTransporte, horarioTransporte,
+        locationUiState
+    ) {
+        val categoryExtrasValid =
+            (!isIluminacao(selectedCategory) || numeroPoste.isNotBlank()) &&
+            (!isSaneamento(selectedCategory) || areaSaneamento.isNotBlank()) &&
+            (!isOrgaos(selectedCategory) || nomeOrgao.isNotBlank())
+
+        mutableStateOf(
+            selectedCategory != null &&
+            description.length >= 10 &&
+            when {
+                isTransporte(selectedCategory) ->
+                    numeroTransporte.isNotBlank() && linhaTransporte.isNotBlank() && horarioTransporte.isNotBlank()
+                useMyLocation ->
+                    locationUiState is LocationUiState.Success &&
+                    (locationLatitude != 0.0 || locationLongitude != 0.0) &&
+                    categoryExtrasValid
+                else ->
+                    cep.isNotBlank() && rua.isNotBlank() && bairro.isNotBlank() && numero.isNotBlank() &&
+                    categoryExtrasValid
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             AppHeader(
@@ -244,97 +273,14 @@ fun NewProtocolScreen(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        snackbarHost = {
-            SnackbarHost(snackbarHostState) { data ->
-                Snackbar(
-                    modifier = Modifier.padding(16.dp),
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = Color.White,
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Cancel,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = data.visuals.message,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
-        },
-        bottomBar = {
-            val isFormValid by remember(
-                selectedCategory, description, useMyLocation,
-                cep, rua, bairro, numero,
-                numeroPoste, areaSaneamento, nomeOrgao,
-                numeroTransporte, linhaTransporte, horarioTransporte,
-                locationUiState
-            ) {
-                val categoryExtrasValid =
-                    (!isIluminacao(selectedCategory) || numeroPoste.isNotBlank()) &&
-                    (!isSaneamento(selectedCategory) || areaSaneamento.isNotBlank()) &&
-                    (!isOrgaos(selectedCategory) || nomeOrgao.isNotBlank())
-
-                mutableStateOf(
-                    selectedCategory != null &&
-                    description.length >= 10 &&
-                    when {
-                        isTransporte(selectedCategory) ->
-                            numeroTransporte.isNotBlank() && linhaTransporte.isNotBlank() && horarioTransporte.isNotBlank()
-                        useMyLocation ->
-                            locationUiState is LocationUiState.Success &&
-                            (locationLatitude != 0.0 || locationLongitude != 0.0) &&
-                            categoryExtrasValid
-                        else ->
-                            cep.isNotBlank() && rua.isNotBlank() && bairro.isNotBlank() && numero.isNotBlank() &&
-                            categoryExtrasValid
-                    }
-                )
-            }
-
-            Button(
-                text = "Enviar Reclamação",
-                onClick = {
-                    viewModel.saveProtocol(
-                        selectedCategory = selectedCategory,
-                        description = description,
-                        useMyLocation = useMyLocation,
-                        cep = cep,
-                        rua = rua,
-                        bairro = bairro,
-                        numero = numero,
-                        pontoReferencia = pontoReferencia,
-                        selectedPhotoUris = selectedImages,
-                        numeroPoste = numeroPoste,
-                        areaSaneamento = areaSaneamento,
-                        nomeOrgao = nomeOrgao,
-                        numeroTransporte = numeroTransporte,
-                        linhaTransporte = linhaTransporte,
-                        horarioTransporte = horarioTransporte,
-                        latitude = locationLatitude,
-                        longitude = locationLongitude
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                enabled = insertUiState != InsertUiState.Loading && isFormValid,
-                variant = if (isFormValid) ButtonVariant.Primary else ButtonVariant.Disabled
-            )
-        }
+        snackbarHost = { FiscalizaSnackbarHost(snackbarHostState) }
     ) { innerPadding ->
 
         Column(
             modifier = modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(innerPadding)
+                .imePadding()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
@@ -613,6 +559,36 @@ fun NewProtocolScreen(
                     placeholder = "Digite o ponto de referência"
                 )
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                text = "Enviar Reclamação",
+                onClick = {
+                    viewModel.saveProtocol(
+                        selectedCategory = selectedCategory,
+                        description = description,
+                        useMyLocation = useMyLocation,
+                        cep = cep,
+                        rua = rua,
+                        bairro = bairro,
+                        numero = numero,
+                        pontoReferencia = pontoReferencia,
+                        selectedPhotoUris = selectedImages,
+                        numeroPoste = numeroPoste,
+                        areaSaneamento = areaSaneamento,
+                        nomeOrgao = nomeOrgao,
+                        numeroTransporte = numeroTransporte,
+                        linhaTransporte = linhaTransporte,
+                        horarioTransporte = horarioTransporte,
+                        latitude = locationLatitude,
+                        longitude = locationLongitude
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = insertUiState != InsertUiState.Loading && isFormValid,
+                variant = if (isFormValid) ButtonVariant.Primary else ButtonVariant.Disabled
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
         }
