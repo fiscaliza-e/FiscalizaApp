@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import br.edu.ifal.fiscalizaapp.composables.session.SessionManager
+import br.edu.ifal.fiscalizaapp.data.session.SessionManager
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
