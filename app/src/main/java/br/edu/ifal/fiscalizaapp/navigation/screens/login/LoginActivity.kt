@@ -1,7 +1,5 @@
 package br.edu.ifal.fiscalizaapp.navigation.screens.login
 
-import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,37 +18,42 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.R
-import br.edu.ifal.fiscalizaapp.composables.input.Input
 import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
-import br.edu.ifal.fiscalizaapp.composables.input.InputType
+import br.edu.ifal.fiscalizaapp.composables.input.Input
 import br.edu.ifal.fiscalizaapp.composables.input.InputStyle
+import br.edu.ifal.fiscalizaapp.composables.input.InputType
 import br.edu.ifal.fiscalizaapp.composables.input.InputVariant
-import br.edu.ifal.fiscalizaapp.data.db.DatabaseHelper
-import br.edu.ifal.fiscalizaapp.composables.session.SessionManager
 import br.edu.ifal.fiscalizaapp.navigation.routes.homeRoute
 import br.edu.ifal.fiscalizaapp.navigation.routes.registerRoute
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.LoginViewModel
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 
 @Composable
-fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
-    Scaffold { innerPadding ->
+fun LoginScreen(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
+) {
+    val loginState by viewModel.loginState.collectAsState()
 
-        var email by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var isLoadingLogin by remember { mutableStateOf(false) }
-        var errorMessage by remember { mutableStateOf<String?>(null) }
-        val scope = rememberCoroutineScope()
-        val context = LocalContext.current
-        val sessionManager by remember {
-            mutableStateOf(SessionManager(context))
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    val isLoading = loginState is LoginViewModel.LoginState.Loading
+    val errorMessage = (loginState as? LoginViewModel.LoginState.Error)?.message
+
+    LaunchedEffect(loginState) {
+        if (loginState is LoginViewModel.LoginState.Success) {
+            navController.navigate(homeRoute)
         }
+    }
+
+    Scaffold { innerPadding ->
 
         Column(
             modifier = Modifier
@@ -125,21 +128,8 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
             }
             Spacer(modifier = Modifier.height(24.dp))
             Button(
-                text = "Entrar",
-                onClick = {
-                    handleSubmitlogin(
-                        scope = scope,
-                        context = context,
-                        email = email,
-                        password = password,
-                        setIsLoading = { isLoadingLogin = it },
-                        setErrorMessage = { errorMessage = it },
-                        sessionManager = sessionManager,
-                        onSuccess = {
-                            navController.navigate(homeRoute)
-                        }
-                    )
-                },
+                text = if (isLoading) "Entrando..." else "Entrar",
+                onClick = { viewModel.login(email, password) },
                 variant = ButtonVariant.Primary,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -170,62 +160,6 @@ fun LoginScreen(navController: NavController, modifier: Modifier = Modifier) {
                         navController.navigate(registerRoute)
                     }
                 )
-            }
-        }
-    }
-}
-
-private fun handleSubmitlogin(
-    scope: CoroutineScope,
-    context: Context,
-    email: String,
-    password: String,
-    setIsLoading: (Boolean) -> Unit,
-    setErrorMessage: (String?) -> Unit,
-    sessionManager: SessionManager,
-    onSuccess: () -> Unit
-) {
-    setIsLoading(true)
-    setErrorMessage(null)
-
-    Log.d("LOGIN_ATTEMPT", "Email: '${email.trim()}', Senha: '${password}'")
-
-    if (email.isBlank() || password.isBlank()) {
-        setErrorMessage("Por favor, preencha todos os campos.")
-        setIsLoading(false)
-        return
-    }
-
-    scope.launch(Dispatchers.IO) {
-        try {
-            val db = DatabaseHelper.getInstance(context)
-            val userDao = db.userDao()
-            val user = userDao.getByEmail(email.trim())
-
-            Log.d("LOGIN_ATTEMPT", "Usuário encontrado no banco: ${user?.email}")
-
-            withContext(Dispatchers.Main) {
-                if (user != null && user.password == password) {
-
-                    val idToSave = user.apiId ?: user.id?.toInt()
-
-                    if (idToSave != null) {
-                        sessionManager.saveUserApiId(idToSave)
-                        Log.d("LOGIN_SUCCESS", "User ID saved: $idToSave (API ou Local)")
-                        onSuccess()
-                    } else {
-                        setErrorMessage("Erro de sessão: ID do usuário indisponível.")
-                    }
-
-                } else {
-                    setErrorMessage("E-mail ou senha inválidos.")
-                }
-                setIsLoading(false)
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                setErrorMessage("Ocorreu um erro ao tentar fazer login: ${e.message}")
-                setIsLoading(false)
             }
         }
     }
