@@ -1,5 +1,8 @@
 package br.edu.ifal.fiscalizaapp.navigation.screens.protocols
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import br.edu.ifal.fiscalizaapp.composables.button.Button
@@ -63,8 +68,12 @@ import br.edu.ifal.fiscalizaapp.ui.viewmodels.CategoryUiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CepUiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CepViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.InsertUiState
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.LocationUiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.NewProtocolViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 
 private val SANEAMENTO_AREAS = listOf("Água", "Esgoto", "Bueiro / Drenagem", "Coleta de lixo")
 
@@ -84,6 +93,7 @@ fun NewProtocolScreen(
     viewModel: NewProtocolViewModel = viewModel(factory = ViewModelFactory(LocalContext.current)),
     cepViewModel: CepViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     var selectedCategory by remember { mutableStateOf<CategoryUiModel?>(null) }
@@ -113,15 +123,35 @@ fun NewProtocolScreen(
     var linhaTransporte by remember { mutableStateOf("") }
     var horarioTransporte by remember { mutableStateOf("") }
 
+    // Coordenadas GPS
+    var locationLatitude by remember { mutableStateOf(0.0) }
+    var locationLongitude by remember { mutableStateOf(0.0) }
+
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris ->
         selectedImages = (selectedImages + uris).distinct().take(6)
     }
 
+    val locationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { perms ->
+        val granted = perms[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                perms[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (granted) {
+            fetchCurrentLocation(locationClient, viewModel)
+        } else {
+            useMyLocation = false
+            viewModel.setLocationError("Permissão de localização negada.")
+        }
+    }
+
     val categoryUiState by viewModel.categoryUiState.collectAsState()
     val insertUiState by viewModel.insertUiState.collectAsState()
     val preSelectedCategory by viewModel.preSelectedCategory.collectAsState()
+    val locationUiState by viewModel.locationUiState.collectAsState()
     val cepUiState by cepViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -149,11 +179,42 @@ fun NewProtocolScreen(
                 rua = state.address.street
                 bairro = state.address.neighborhood
             }
-            is CepUiState.Idle, is CepUiState.Error -> {
-                if (state is CepUiState.Idle) {
-                    rua = ""
-                    bairro = ""
-                }
+            is CepUiState.Idle -> {
+                rua = ""
+                bairro = ""
+            }
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(useMyLocation) {
+        if (useMyLocation) {
+            val hasFine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            val hasCoarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            if (hasFine || hasCoarse) {
+                fetchCurrentLocation(locationClient, viewModel)
+            } else {
+                locationPermissionLauncher.launch(
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                )
+            }
+        } else {
+            viewModel.resetLocationState()
+        }
+    }
+
+    LaunchedEffect(locationUiState) {
+        when (val state = locationUiState) {
+            is LocationUiState.Success -> {
+                locationLatitude = state.latitude
+                locationLongitude = state.longitude
+                rua = state.address.rua
+                bairro = state.address.bairro
+                if (state.address.cep.isNotBlank()) cep = state.address.cep
+            }
+            is LocationUiState.Error -> {
+                snackbarHostState.showSnackbar(state.message)
+                useMyLocation = false
             }
             else -> {}
         }
@@ -210,26 +271,30 @@ fun NewProtocolScreen(
         },
         bottomBar = {
             val isFormValid by remember(
-                selectedCategory,
-                description,
-                useMyLocation,
+                selectedCategory, description, useMyLocation,
                 cep, rua, bairro, numero,
-                numeroPoste,
-                areaSaneamento,
-                nomeOrgao,
-                numeroTransporte, linhaTransporte, horarioTransporte
+                numeroPoste, areaSaneamento, nomeOrgao,
+                numeroTransporte, linhaTransporte, horarioTransporte,
+                locationUiState
             ) {
+                val categoryExtrasValid =
+                    (!isIluminacao(selectedCategory) || numeroPoste.isNotBlank()) &&
+                    (!isSaneamento(selectedCategory) || areaSaneamento.isNotBlank()) &&
+                    (!isOrgaos(selectedCategory) || nomeOrgao.isNotBlank())
+
                 mutableStateOf(
                     selectedCategory != null &&
                     description.length >= 10 &&
                     when {
                         isTransporte(selectedCategory) ->
                             numeroTransporte.isNotBlank() && linhaTransporte.isNotBlank() && horarioTransporte.isNotBlank()
+                        useMyLocation ->
+                            locationUiState is LocationUiState.Success &&
+                            (locationLatitude != 0.0 || locationLongitude != 0.0) &&
+                            categoryExtrasValid
                         else ->
-                            (useMyLocation || (cep.isNotBlank() && rua.isNotBlank() && bairro.isNotBlank() && numero.isNotBlank())) &&
-                            (!isIluminacao(selectedCategory) || numeroPoste.isNotBlank()) &&
-                            (!isSaneamento(selectedCategory) || areaSaneamento.isNotBlank()) &&
-                            (!isOrgaos(selectedCategory) || nomeOrgao.isNotBlank())
+                            cep.isNotBlank() && rua.isNotBlank() && bairro.isNotBlank() && numero.isNotBlank() &&
+                            categoryExtrasValid
                     }
                 )
             }
@@ -252,7 +317,9 @@ fun NewProtocolScreen(
                         nomeOrgao = nomeOrgao,
                         numeroTransporte = numeroTransporte,
                         linhaTransporte = linhaTransporte,
-                        horarioTransporte = horarioTransporte
+                        horarioTransporte = horarioTransporte,
+                        latitude = locationLatitude,
+                        longitude = locationLongitude
                     )
                 },
                 modifier = Modifier
@@ -299,9 +366,12 @@ fun NewProtocolScreen(
                         onOptionSelected = { selectedTitle ->
                             selectedCategory = state.categories.find { it.title == selectedTitle }
                             isCategoryDropdownExpanded = false
-                            // limpa campos específicos ao trocar categoria
                             numeroPoste = ""; areaSaneamento = ""; nomeOrgao = ""
                             numeroTransporte = ""; linhaTransporte = ""; horarioTransporte = ""
+                            if (isTransporte(selectedCategory)) {
+                                useMyLocation = false
+                                viewModel.resetLocationState()
+                            }
                         }
                     )
                 }
@@ -310,7 +380,7 @@ fun NewProtocolScreen(
                 }
             }
 
-            // ── Campos específicos por categoria (acima da descrição) ───────
+            // ── Campos específicos por categoria ────────────────────────────
 
             if (isIluminacao(selectedCategory)) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -330,7 +400,7 @@ fun NewProtocolScreen(
                     value = nomeOrgao,
                     onValueChange = { nomeOrgao = it },
                     type = InputType.Text,
-                    placeholder = "Ex: Escola Municipal João Paulo II"
+                    placeholder = "Ex: UBS Centro, Escola Municipal João Paulo II"
                 )
             }
 
@@ -437,14 +507,51 @@ fun NewProtocolScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                // Feedback de status do GPS
+                when (val locState = locationUiState) {
+                    is LocationUiState.Loading -> {
+                        Row(
+                            modifier = Modifier.padding(start = 4.dp, top = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator(modifier = Modifier.size(14.dp), strokeWidth = 2.dp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Buscando sua localização...",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    is LocationUiState.Success -> {
+                        Row(
+                            modifier = Modifier.padding(start = 4.dp, top = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = PrimaryGreen,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Localização obtida com sucesso",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = PrimaryGreen
+                            )
+                        }
+                    }
+                    else -> Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
                 Input(
                     label = "CEP",
                     value = cep,
                     onValueChange = { cep = it },
                     type = InputType.Number,
                     mask = ::cepMask,
-                    enabled = !useMyLocation,
                     placeholder = "00000-000"
                 )
 
@@ -475,7 +582,6 @@ fun NewProtocolScreen(
                     value = rua,
                     onValueChange = { rua = it },
                     type = InputType.Text,
-                    enabled = !useMyLocation,
                     placeholder = "Digite o nome da rua"
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -486,7 +592,6 @@ fun NewProtocolScreen(
                         onValueChange = { bairro = it },
                         modifier = Modifier.weight(1f),
                         type = InputType.Text,
-                        enabled = !useMyLocation,
                         placeholder = "Digite o nome do bairro"
                     )
                     Spacer(modifier = Modifier.width(16.dp))
@@ -496,7 +601,6 @@ fun NewProtocolScreen(
                         onValueChange = { numero = it },
                         modifier = Modifier.width(100.dp),
                         type = InputType.Number,
-                        enabled = !useMyLocation,
                         placeholder = "Nº / S/N"
                     )
                 }
@@ -506,7 +610,6 @@ fun NewProtocolScreen(
                     value = pontoReferencia,
                     onValueChange = { pontoReferencia = it },
                     type = InputType.Text,
-                    enabled = !useMyLocation,
                     placeholder = "Digite o ponto de referência"
                 )
             }
@@ -514,6 +617,27 @@ fun NewProtocolScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+@SuppressLint("MissingPermission")
+private fun fetchCurrentLocation(
+    client: FusedLocationProviderClient,
+    viewModel: NewProtocolViewModel
+) {
+    client.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+        .addOnSuccessListener { location ->
+            if (location != null) {
+                viewModel.geocodeCoordinates(location.latitude, location.longitude)
+            } else {
+                client.lastLocation
+                    .addOnSuccessListener { last ->
+                        if (last != null) viewModel.geocodeCoordinates(last.latitude, last.longitude)
+                        else viewModel.setLocationError("Localização não disponível. Ative o GPS e tente novamente.")
+                    }
+                    .addOnFailureListener { viewModel.setLocationError("Erro ao obter localização.") }
+            }
+        }
+        .addOnFailureListener { viewModel.setLocationError("Erro ao acessar o GPS.") }
 }
 
 @Composable

@@ -20,9 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    version = 10,
-    entities = [CategoryEntity::class, UserEntity::class, ProtocolEntity::class, FaqEntity::class],
-    exportSchema = false
+    version = 12,
 )
 abstract class DatabaseHelper : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
@@ -62,6 +60,19 @@ abstract class DatabaseHelper : RoomDatabase() {
             }
         }
 
+        val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE protocols ADD COLUMN latitude REAL NOT NULL DEFAULT 0.0")
+                database.execSQL("ALTER TABLE protocols ADD COLUMN longitude REAL NOT NULL DEFAULT 0.0")
+            }
+        }
+
+        val MIGRATION_11_12 = object : Migration(11, 12) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE protocols ADD COLUMN createdAt INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         fun getInstance(context: Context): DatabaseHelper {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -70,7 +81,7 @@ abstract class DatabaseHelper : RoomDatabase() {
                     "fiscalizae.db"
                 )
                     .fallbackToDestructiveMigration()
-                    .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
+                    .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
                     .fallbackToDestructiveMigration()
                     .addCallback(DatabaseCallback(context))
                     .build()

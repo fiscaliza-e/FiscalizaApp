@@ -175,10 +175,36 @@ fun ProtocolDetailScreen(
                 }
             }
 
+            val isTransporte = "transporte" in protocol.title.lowercase()
+
             DetailSection(title = "Sua solicitação") {
                 DetailField(label = "Descrição", value = protocol.description)
 
-                if (!protocol.useMyLocation && fullAddress.isNotBlank()) {
+                // Campos específicos por categoria
+                if (protocol.numeroPoste.isNotBlank()) {
+                    Spacer(Modifier.height(12.dp))
+                    DetailField(label = "Número do poste", value = protocol.numeroPoste)
+                }
+                if (protocol.nomeOrgao.isNotBlank()) {
+                    Spacer(Modifier.height(12.dp))
+                    DetailField(label = "Órgão público", value = protocol.nomeOrgao)
+                }
+                if (protocol.areaSaneamento.isNotBlank()) {
+                    Spacer(Modifier.height(12.dp))
+                    DetailField(label = "Área do saneamento", value = protocol.areaSaneamento)
+                }
+                if (protocol.numeroTransporte.isNotBlank() || protocol.linhaTransporte.isNotBlank()) {
+                    Spacer(Modifier.height(12.dp))
+                    DetailField(label = "Número do veículo", value = protocol.numeroTransporte)
+                    Spacer(Modifier.height(8.dp))
+                    DetailField(label = "Linha", value = protocol.linhaTransporte)
+                    if (protocol.horarioTransporte.isNotBlank()) {
+                        Spacer(Modifier.height(8.dp))
+                        DetailField(label = "Horário", value = protocol.horarioTransporte)
+                    }
+                }
+
+                if (!isTransporte && !protocol.useMyLocation && fullAddress.isNotBlank()) {
                     Spacer(Modifier.height(12.dp))
                     Text(
                         text = "Endereço",
@@ -238,7 +264,7 @@ fun ProtocolDetailScreen(
                             }
                         }
                     }
-                } else if (protocol.useMyLocation) {
+                } else if (!isTransporte && protocol.useMyLocation) {
                     Spacer(Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -252,6 +278,20 @@ fun ProtocolDetailScreen(
                             text = "Localização atual do usuário",
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
+
+                    if (protocol.latitude != 0.0 || protocol.longitude != 0.0) {
+                        Spacer(Modifier.height(12.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(180.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            OsmMapView(lat = protocol.latitude, lon = protocol.longitude)
+                        }
                     }
                 }
             }

@@ -1,5 +1,8 @@
 package br.edu.ifal.fiscalizaapp.navigation.screens.profile
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,17 +11,21 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,13 +47,16 @@ import br.edu.ifal.fiscalizaapp.composables.dialog.LogoutDialog
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeader
 import br.edu.ifal.fiscalizaapp.composables.header.AppHeaderType
 import br.edu.ifal.fiscalizaapp.navigation.routes.loginRoute
-import br.edu.ifal.fiscalizaapp.navigation.routes.navigateToChooseAvatarScreen
 import br.edu.ifal.fiscalizaapp.navigation.routes.navigateToEditProfileScreen
 import br.edu.ifal.fiscalizaapp.ui.state.UiState
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProfileViewModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.ViewModelFactory
 import coil.compose.AsyncImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
 @Composable
 fun ProfileScreen(
@@ -54,10 +64,34 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
+    val user = (uiState as? UiState.Success)?.data
 
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showPhotoOptionsDialog by remember { mutableStateOf(false) }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            scope.launch {
+                val path = withContext(Dispatchers.IO) {
+                    try {
+                        val dir = File(context.filesDir, "profile_photos").also { it.mkdirs() }
+                        val dest = File(dir, "profile_${System.currentTimeMillis()}.jpg")
+                        context.contentResolver.openInputStream(uri)?.use { input ->
+                            dest.outputStream().use { output -> input.copyTo(output) }
+                        }
+                        dest.absolutePath
+                    } catch (_: Exception) { null }
+                }
+                path?.let { viewModel.saveProfileImagePath(it) }
+            }
+        }
+    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -98,6 +132,51 @@ fun ProfileScreen(
         )
     }
 
+    if (showPhotoOptionsDialog) {
+        AlertDialog(
+            onDismissRequest = { showPhotoOptionsDialog = false },
+            title = { Text("Foto de perfil") },
+            text = {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    TextButton(
+                        onClick = {
+                            showPhotoOptionsDialog = false
+                            photoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Trocar foto",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    HorizontalDivider()
+                    TextButton(
+                        onClick = {
+                            showPhotoOptionsDialog = false
+                            viewModel.clearProfileImage()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Remover foto",
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showPhotoOptionsDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -113,8 +192,6 @@ fun ProfileScreen(
                 .fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            val user = (uiState as? UiState.Success)?.data
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -166,7 +243,15 @@ fun ProfileScreen(
                         modifier = Modifier
                             .offset(x = 40.dp, y = 40.dp)
                             .size(36.dp)
-                            .clickable { navController.navigateToChooseAvatarScreen() },
+                            .clickable {
+                                if (!user?.profileImage.isNullOrBlank()) {
+                                    showPhotoOptionsDialog = true
+                                } else {
+                                    photoPickerLauncher.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                }
+                            },
                         shape = CircleShape,
                         color = PrimaryGreen
                     ) {
