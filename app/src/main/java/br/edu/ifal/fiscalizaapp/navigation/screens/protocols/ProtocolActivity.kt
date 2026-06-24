@@ -41,8 +41,10 @@ fun ProtocolScreen(
     val context = LocalContext.current
     val viewModel: ProtocolViewModel = viewModel(factory = ViewModelFactory(context))
 
-    val protocols by viewModel.protocols.collectAsStateWithLifecycle(initialValue = emptyList())
+    val protocols by viewModel.filteredProtocols.collectAsStateWithLifecycle(initialValue = emptyList())
     val refreshState by viewModel.refreshState.collectAsStateWithLifecycle()
+    val filterStatus by viewModel.filterStatus.collectAsStateWithLifecycle()
+    val sortOrder by viewModel.sortOrder.collectAsStateWithLifecycle()
 
     LaunchedEffect(refreshState) {
         if (refreshState is RefreshState.Error) {
@@ -85,6 +87,10 @@ fun ProtocolScreen(
             ProtocolList(
                 protocols = protocols,
                 modifier = Modifier.fillMaxSize(),
+                filterStatus = filterStatus,
+                sortOrder = sortOrder,
+                onFilterChange = viewModel::setFilterStatus,
+                onSortChange = viewModel::setSortOrder,
                 onNewProtocolClick = {
                     navController.navigate(newProtocolRoute)
                 },
