@@ -127,6 +127,30 @@ class ProfileViewModel(
         _updateState.value = UpdateProfileState.Idle
     }
 
+    fun saveProfileImagePath(path: String) {
+        viewModelScope.launch {
+            try {
+                val user = userRepository.getLoggedUser(sessionManager.getUserApiId())
+                if (user != null) {
+                    userRepository.updateUser(user.copy(profileImage = path))
+                    refreshUser()
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
+    fun clearProfileImage() {
+        viewModelScope.launch {
+            try {
+                val user = userRepository.getLoggedUser(sessionManager.getUserApiId())
+                if (user != null) {
+                    userRepository.updateUser(user.copy(profileImage = null))
+                    refreshUser()
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
     fun updateProfilePicture(apiId: Int) {
         viewModelScope.launch {
             try {

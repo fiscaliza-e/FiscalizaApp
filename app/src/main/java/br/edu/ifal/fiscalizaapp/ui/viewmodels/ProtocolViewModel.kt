@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 sealed class RefreshState {
     object Idle : RefreshState()
@@ -51,8 +53,8 @@ class ProtocolViewModel(
         val filtered = if (filter == ProtocolFilter.ALL) list
         else list.filter { matchesFilter(it.status, filter) }
         when (order) {
-            SortOrder.NEWEST_FIRST -> filtered.sortedByDescending { it.date }
-            SortOrder.OLDEST_FIRST -> filtered.sortedBy { it.date }
+            SortOrder.NEWEST_FIRST -> filtered.sortedByDescending { sortKey(it) }
+            SortOrder.OLDEST_FIRST -> filtered.sortedBy { sortKey(it) }
         }
     }
 
@@ -99,6 +101,11 @@ class ProtocolViewModel(
         sessionManager.clearSession()
     }
 }
+
+private fun sortKey(protocol: br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity): Long =
+    if (protocol.createdAt > 0L) protocol.createdAt
+    else try { SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).parse(protocol.date)?.time ?: 0L }
+    catch (_: Exception) { 0L }
 
 private fun matchesFilter(status: String, filter: ProtocolFilter): Boolean {
     val s = status.uppercase()

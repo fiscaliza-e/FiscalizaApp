@@ -28,5 +28,8 @@ data class ProtocolEntity(
     val nomeOrgao: String = "",
     val numeroTransporte: String = "",
     val linhaTransporte: String = "",
-    val horarioTransporte: String = ""
+    val horarioTransporte: String = "",
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
+    val createdAt: Long = 0L
 )

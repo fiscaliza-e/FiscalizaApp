@@ -9,6 +9,8 @@ import br.edu.ifal.fiscalizaapp.data.repository.CategoryRepository
 import br.edu.ifal.fiscalizaapp.data.repository.ProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.repository.LocalProtocolRepository
 import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
+import br.edu.ifal.fiscalizaapp.utils.GeocodedAddress
+import br.edu.ifal.fiscalizaapp.utils.geocodeLocation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +27,17 @@ data class CategoryUiModel(
     val title: String,
     val description: String
 )
+
+sealed class LocationUiState {
+    object Idle : LocationUiState()
+    object Loading : LocationUiState()
+    data class Success(
+        val address: GeocodedAddress,
+        val latitude: Double,
+        val longitude: Double
+    ) : LocationUiState()
+    data class Error(val message: String) : LocationUiState()
+}
 
 sealed class CategoryUiState {
     object Loading : CategoryUiState()
@@ -48,6 +61,25 @@ open class NewProtocolViewModel(
 
     private val _preSelectedCategory = MutableStateFlow<CategoryUiModel?>(null)
     val preSelectedCategory: StateFlow<CategoryUiModel?> = _preSelectedCategory.asStateFlow()
+
+    private val _locationUiState = MutableStateFlow<LocationUiState>(LocationUiState.Idle)
+    val locationUiState: StateFlow<LocationUiState> = _locationUiState.asStateFlow()
+
+    fun geocodeCoordinates(latitude: Double, longitude: Double) {
+        viewModelScope.launch {
+            _locationUiState.value = LocationUiState.Loading
+            val address = geocodeLocation(context, latitude, longitude)
+            _locationUiState.value = LocationUiState.Success(address, latitude, longitude)
+        }
+    }
+
+    fun setLocationError(message: String) {
+        _locationUiState.value = LocationUiState.Error(message)
+    }
+
+    fun resetLocationState() {
+        _locationUiState.value = LocationUiState.Idle
+    }
 
     open fun fetchCategories(preSelectedId: Int = -1) {
         viewModelScope.launch {
@@ -90,7 +122,9 @@ open class NewProtocolViewModel(
         nomeOrgao: String = "",
         numeroTransporte: String = "",
         linhaTransporte: String = "",
-        horarioTransporte: String = ""
+        horarioTransporte: String = "",
+        latitude: Double = 0.0,
+        longitude: Double = 0.0
     ) {
         viewModelScope.launch {
             _insertUiState.value = InsertUiState.Loading
@@ -140,20 +174,24 @@ open class NewProtocolViewModel(
 
                 val currentDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
 
+                val now = System.currentTimeMillis()
                 val protocolEntity = ProtocolEntity(
-                    protocolNumber = "LOCAL-${System.currentTimeMillis()}",
+                    protocolNumber = "LOCAL-$now",
+                    createdAt = now,
                     title = selectedCategory.title,
                     description = description,
-                    cep = if (useMyLocation || isTransporte) "" else cep,
-                    bairro = if (useMyLocation || isTransporte) "" else bairro,
-                    rua = if (useMyLocation || isTransporte) "" else rua,
-                    numero = if (useMyLocation || isTransporte) "" else numero,
-                    pontoReferencia = if (useMyLocation || isTransporte) "" else pontoReferencia,
-                    useMyLocation = useMyLocation && !isTransporte,
+                    cep = if (isTransporte) "" else cep,
+                    bairro = if (isTransporte) "" else bairro,
+                    rua = if (isTransporte) "" else rua,
+                    numero = if (isTransporte) "" else numero,
+                    pontoReferencia = if (isTransporte) "" else pontoReferencia,
+                    useMyLocation = !isTransporte && useMyLocation,
                     status = "Pendente",
                     userId = userId,
                     date = currentDate,
                     photoUris = savedPhotoPaths.joinToString(","),
+                    latitude = if (useMyLocation && !isTransporte) latitude else 0.0,
+                    longitude = if (useMyLocation && !isTransporte) longitude else 0.0,
                     numeroPoste = numeroPoste,
                     areaSaneamento = areaSaneamento,
                     nomeOrgao = nomeOrgao,
