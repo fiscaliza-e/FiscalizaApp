@@ -1,7 +1,6 @@
 package br.edu.ifal.fiscalizaapp.navigation.screens.protocols
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -18,11 +17,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +58,8 @@ import br.edu.ifal.fiscalizaapp.composables.input.cepMask
 import br.edu.ifal.fiscalizaapp.composables.textarea.TextArea
 import br.edu.ifal.fiscalizaapp.ui.theme.LightGray
 import br.edu.ifal.fiscalizaapp.ui.theme.PrimaryGreen
+import br.edu.ifal.fiscalizaapp.navigation.routes.homeRoute
+import br.edu.ifal.fiscalizaapp.navigation.routes.protocolRoute
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CategoryUiModel
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CategoryUiState
 import br.edu.ifal.fiscalizaapp.ui.viewmodels.CepUiState
@@ -68,7 +76,7 @@ fun NewProtocolScreen(
     viewModel: NewProtocolViewModel = viewModel(factory = ViewModelFactory(LocalContext.current)),
     cepViewModel: CepViewModel = viewModel(factory = ViewModelFactory(LocalContext.current))
 ) {
-    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var selectedCategory by remember { mutableStateOf<CategoryUiModel?>(null) }
     var description by remember { mutableStateOf("") }
@@ -131,15 +139,13 @@ fun NewProtocolScreen(
     LaunchedEffect(insertUiState) {
         when (val state = insertUiState) {
             is InsertUiState.Success -> {
-                Toast.makeText(context, "Protocolo inserido com sucesso!", Toast.LENGTH_SHORT)
-                    .show()
-                navController.popBackStack()
+                navController.navigate("$protocolRoute?created=true") {
+                    popUpTo(homeRoute) { inclusive = false }
+                }
             }
-
             is InsertUiState.Error -> {
-                Toast.makeText(context, "Erro: ${state.message}", Toast.LENGTH_SHORT).show()
+                snackbarHostState.showSnackbar("Erro: ${state.message}")
             }
-
             else -> {}
         }
     }
@@ -151,6 +157,31 @@ fun NewProtocolScreen(
                 title = "Nova Reclamação",
                 onBackClick = { navController.popBackStack() }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                Snackbar(
+                    modifier = Modifier.padding(16.dp),
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = Color.White,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Cancel,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = data.visuals.message,
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
         },
         bottomBar = {
             val isFormValid by remember(
