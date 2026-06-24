@@ -1,4 +1,4 @@
-package br.edu.ifal.fiscalizaapp.composables.session
+package br.edu.ifal.fiscalizaapp.data.session
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -11,9 +11,7 @@ class SessionManager(context: Context) {
     }
 
     fun saveUserApiId(id: Int) {
-        val editor = prefs.edit()
-        editor.putInt(USER_API_ID, id)
-        editor.apply()
+        prefs.edit().putInt(USER_API_ID, id).apply()
     }
 
     fun getUserApiId(): Int {
@@ -21,8 +19,6 @@ class SessionManager(context: Context) {
     }
 
     fun clearSession() {
-        val editor = prefs.edit()
-        editor.clear()
-        editor.apply()
+        prefs.edit().clear().apply()
     }
 }

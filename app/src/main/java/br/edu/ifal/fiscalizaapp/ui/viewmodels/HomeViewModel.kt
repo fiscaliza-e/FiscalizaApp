@@ -1,9 +1,8 @@
 package br.edu.ifal.fiscalizaapp.ui.viewmodels
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.edu.ifal.fiscalizaapp.composables.session.SessionManager
+import br.edu.ifal.fiscalizaapp.data.session.SessionManager
 import br.edu.ifal.fiscalizaapp.data.db.entities.UserEntity
 import br.edu.ifal.fiscalizaapp.data.repository.UserRepository
 import br.edu.ifal.fiscalizaapp.ui.state.UiState
@@ -12,9 +11,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel (
+class HomeViewModel(
     private val repository: UserRepository,
-    context: Context
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<UserEntity>>(UiState.Loading)
@@ -22,8 +21,6 @@ class HomeViewModel (
 
     private val _updateState = MutableStateFlow<UpdateProfileState>(UpdateProfileState.Idle)
     val updateState: StateFlow<UpdateProfileState> = _updateState.asStateFlow()
-
-    private val sessionManager = SessionManager(context)
 
     init {
         loadCurrentUser()
