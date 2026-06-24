@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    version = 9,
+    version = 10,
     entities = [CategoryEntity::class, UserEntity::class, ProtocolEntity::class, FaqEntity::class],
     exportSchema = false
 )
@@ -51,6 +51,17 @@ abstract class DatabaseHelper : RoomDatabase() {
             }
         }
 
+        val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE protocols ADD COLUMN numeroPoste TEXT NOT NULL DEFAULT ''")
+                database.execSQL("ALTER TABLE protocols ADD COLUMN areaSaneamento TEXT NOT NULL DEFAULT ''")
+                database.execSQL("ALTER TABLE protocols ADD COLUMN nomeOrgao TEXT NOT NULL DEFAULT ''")
+                database.execSQL("ALTER TABLE protocols ADD COLUMN numeroTransporte TEXT NOT NULL DEFAULT ''")
+                database.execSQL("ALTER TABLE protocols ADD COLUMN linhaTransporte TEXT NOT NULL DEFAULT ''")
+                database.execSQL("ALTER TABLE protocols ADD COLUMN horarioTransporte TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
         fun getInstance(context: Context): DatabaseHelper {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -59,7 +70,7 @@ abstract class DatabaseHelper : RoomDatabase() {
                     "fiscalizae.db"
                 )
                     .fallbackToDestructiveMigration()
-                    .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
+                    .addMigrations(MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
                     .fallbackToDestructiveMigration()
                     .addCallback(DatabaseCallback(context))
                     .build()

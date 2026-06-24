@@ -84,7 +84,13 @@ open class NewProtocolViewModel(
         rua: String,
         numero: String,
         pontoReferencia: String,
-        selectedPhotoUris: List<Uri> = emptyList()
+        selectedPhotoUris: List<Uri> = emptyList(),
+        numeroPoste: String = "",
+        areaSaneamento: String = "",
+        nomeOrgao: String = "",
+        numeroTransporte: String = "",
+        linhaTransporte: String = "",
+        horarioTransporte: String = ""
     ) {
         viewModelScope.launch {
             _insertUiState.value = InsertUiState.Loading
@@ -99,8 +105,15 @@ open class NewProtocolViewModel(
                 _insertUiState.value = InsertUiState.Error("A descrição deve ter no mínimo 10 caracteres.")
                 return@launch
             }
-            if (!useMyLocation && (cep.isBlank() || rua.isBlank() || bairro.isBlank() || numero.isBlank())) {
+
+            val categoryKey = selectedCategory.title.lowercase()
+            val isTransporte = "transporte" in categoryKey
+            if (!isTransporte && !useMyLocation && (cep.isBlank() || rua.isBlank() || bairro.isBlank() || numero.isBlank())) {
                 _insertUiState.value = InsertUiState.Error("Preencha todos os campos de endereço ou use sua localização.")
+                return@launch
+            }
+            if (isTransporte && (numeroTransporte.isBlank() || linhaTransporte.isBlank() || horarioTransporte.isBlank())) {
+                _insertUiState.value = InsertUiState.Error("Preencha o número, a linha e o horário do transporte.")
                 return@launch
             }
 
@@ -131,16 +144,22 @@ open class NewProtocolViewModel(
                     protocolNumber = "LOCAL-${System.currentTimeMillis()}",
                     title = selectedCategory.title,
                     description = description,
-                    cep = if (useMyLocation) "" else cep,
-                    bairro = if (useMyLocation) "" else bairro,
-                    rua = if (useMyLocation) "" else rua,
-                    numero = if (useMyLocation) "" else numero,
-                    pontoReferencia = if (useMyLocation) "" else pontoReferencia,
-                    useMyLocation = useMyLocation,
+                    cep = if (useMyLocation || isTransporte) "" else cep,
+                    bairro = if (useMyLocation || isTransporte) "" else bairro,
+                    rua = if (useMyLocation || isTransporte) "" else rua,
+                    numero = if (useMyLocation || isTransporte) "" else numero,
+                    pontoReferencia = if (useMyLocation || isTransporte) "" else pontoReferencia,
+                    useMyLocation = useMyLocation && !isTransporte,
                     status = "Pendente",
                     userId = userId,
                     date = currentDate,
-                    photoUris = savedPhotoPaths.joinToString(",")
+                    photoUris = savedPhotoPaths.joinToString(","),
+                    numeroPoste = numeroPoste,
+                    areaSaneamento = areaSaneamento,
+                    nomeOrgao = nomeOrgao,
+                    numeroTransporte = numeroTransporte,
+                    linhaTransporte = linhaTransporte,
+                    horarioTransporte = horarioTransporte
                 )
 
                 try {

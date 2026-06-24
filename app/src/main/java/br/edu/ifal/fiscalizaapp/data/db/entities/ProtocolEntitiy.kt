@@ -22,5 +22,11 @@ data class ProtocolEntity(
     val numero: String,
     val pontoReferencia: String,
     val useMyLocation: Boolean,
-    val photoUris: String = ""
+    val photoUris: String = "",
+    val numeroPoste: String = "",
+    val areaSaneamento: String = "",
+    val nomeOrgao: String = "",
+    val numeroTransporte: String = "",
+    val linhaTransporte: String = "",
+    val horarioTransporte: String = ""
 )
