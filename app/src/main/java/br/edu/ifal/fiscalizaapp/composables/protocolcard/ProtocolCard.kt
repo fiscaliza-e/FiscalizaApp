@@ -31,12 +31,11 @@ data class ProtocolCardStyle(
 
 fun mapStatusToVariant(statusText: String): StatusTagVariant {
     return when (statusText.uppercase()) {
-        "PENDENTE" -> StatusTagVariant.Pending
-        "PENDING" -> StatusTagVariant.Pending
-        "VISUALIZADO" -> StatusTagVariant.Viewed
-        "VIEWED" -> StatusTagVariant.Viewed
-        "RESOLVIDO" -> StatusTagVariant.Resolved
-        "RESOLVED" -> StatusTagVariant.Resolved
+        "PENDENTE", "PENDING" -> StatusTagVariant.Pending
+        "VISUALIZADO", "VISUALIZADA", "VIEWED" -> StatusTagVariant.Viewed
+        "RESOLVIDO", "RESOLVIDA", "RESOLVED" -> StatusTagVariant.Resolved
+        "PROCESSADO", "PROCESSADA", "PROCESSED" -> StatusTagVariant.Processed
+        "ARQUIVADO", "ARQUIVADA", "ARCHIVED" -> StatusTagVariant.Archived
         else -> StatusTagVariant.Pending
     }
 }

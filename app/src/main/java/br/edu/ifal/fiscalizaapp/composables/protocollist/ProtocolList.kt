@@ -29,17 +29,23 @@ import br.edu.ifal.fiscalizaapp.composables.button.Button
 import br.edu.ifal.fiscalizaapp.composables.button.ButtonVariant
 import br.edu.ifal.fiscalizaapp.composables.searchfilter.SearchFilter
 import br.edu.ifal.fiscalizaapp.data.db.entities.ProtocolEntity
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.ProtocolFilter
+import br.edu.ifal.fiscalizaapp.ui.viewmodels.SortOrder
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProtocolList(
     protocols: List<ProtocolEntity>,
     modifier: Modifier = Modifier,
+    filterStatus: ProtocolFilter = ProtocolFilter.ALL,
+    sortOrder: SortOrder = SortOrder.NEWEST_FIRST,
+    onFilterChange: (ProtocolFilter) -> Unit = {},
+    onSortChange: (SortOrder) -> Unit = {},
     onNewProtocolClick: () -> Unit,
     onProtocolClick: (String) -> Unit = {}
 ) {
 
-    if (protocols.isEmpty()) {
+    if (protocols.isEmpty() && filterStatus == ProtocolFilter.ALL) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -89,20 +95,44 @@ fun ProtocolList(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
-                SearchFilter(title = "Meus Protocolos")
+                SearchFilter(
+                    title = "Meus Protocolos",
+                    filterStatus = filterStatus,
+                    sortOrder = sortOrder,
+                    onFilterChange = onFilterChange,
+                    onSortChange = onSortChange
+                )
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            items(protocols) { protocol ->
-                ProtocolCard(
-                    title = protocol.title,
-                    description = protocol.description,
-                    status = protocol.status,
-                    id = protocol.protocolNumber,
-                    date = protocol.date,
-                    modifier = Modifier,
-                    onClick = { onProtocolClick(protocol.protocolNumber) }
-                )
+            if (protocols.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 48.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Nenhum protocolo com esse filtro.",
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            } else {
+                items(protocols) { protocol ->
+                    ProtocolCard(
+                        title = protocol.title,
+                        description = protocol.description,
+                        status = protocol.status,
+                        id = protocol.protocolNumber,
+                        date = protocol.date,
+                        modifier = Modifier,
+                        onClick = { onProtocolClick(protocol.protocolNumber) }
+                    )
+                }
             }
         }
     }

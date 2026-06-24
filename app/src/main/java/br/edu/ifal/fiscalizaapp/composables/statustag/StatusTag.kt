@@ -16,6 +16,8 @@ sealed class StatusTagVariant {
     data object Viewed : StatusTagVariant()
     data object Pending : StatusTagVariant()
     data object Resolved : StatusTagVariant()
+    data object Processed : StatusTagVariant()
+    data object Archived : StatusTagVariant()
 }
 
 data class StatusTagStyle(
@@ -33,6 +35,8 @@ private fun StatusTagVariant.getColors(): StatusTagColors {
         StatusTagVariant.Pending -> StatusTagColors(Pending, PendingBackGround)
         StatusTagVariant.Resolved -> StatusTagColors(Resolved, ResolvedBackGround)
         StatusTagVariant.Viewed -> StatusTagColors(Viewed, ViewedBackGround)
+        StatusTagVariant.Processed -> StatusTagColors(Processed, ProcessedBackGround)
+        StatusTagVariant.Archived -> StatusTagColors(Archived, ArchivedBackGround)
     }
 }
 
