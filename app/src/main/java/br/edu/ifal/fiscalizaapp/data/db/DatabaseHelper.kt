@@ -20,7 +20,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
+    entities = [UserEntity::class, CategoryEntity::class, ProtocolEntity::class, FaqEntity::class],
     version = 12,
+    exportSchema = false
 )
 abstract class DatabaseHelper : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
